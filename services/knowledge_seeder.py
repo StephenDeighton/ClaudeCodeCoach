@@ -335,6 +335,11 @@ def seed_issue_links(conn: sqlite3.Connection) -> None:
         ("model-not-set", "model-selection"),
         ("thinking-not-enabled", "extended-thinking"),
 
+        # MCP servers
+        ("mcp-overload", "when-use-mcp"),
+        ("mcp-overload", "mcp-context-warning"),
+        ("mcp-overload", "mcp-connection"),
+
         # Skills, Commands, Agents
         ("no-skills-dir", "skills-overview"),
         ("no-skills-dir", "creating-skills"),
