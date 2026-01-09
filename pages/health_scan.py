@@ -142,29 +142,31 @@ class HealthScanPage:
         is_dark = self.page.theme_mode == ft.ThemeMode.DARK
 
         return ft.Container(
-            content=ft.Column(
-                [
-                    ft.Icon(
-                        ft.Icons.FOLDER_OFF_ROUNDED,
-                        size=64,
-                        color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
-                    ),
-                    ft.Text(
-                        "Not a Claude Code Project",
-                        size=Typography.H2,
-                        weight=ft.FontWeight.BOLD,
-                        color=Colors.TEXT_DARK if not is_dark else Colors.TEXT_LIGHT,
-                    ),
-                    ft.Text(
-                        "This directory doesn't appear to be a Claude Code project.\n"
-                        "Claude Code projects should have a .claude/ directory or CLAUDE.md file.",
-                        size=Typography.BODY_MD,
-                        color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
-                        text_align=ft.TextAlign.CENTER,
-                    ),
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=Spacing.MD,
+            content=ft.SelectionArea(
+                content=ft.Column(
+                    [
+                        ft.Icon(
+                            ft.Icons.FOLDER_OFF_ROUNDED,
+                            size=64,
+                            color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
+                        ),
+                        ft.Text(
+                            "Not a Claude Code Project",
+                            size=Typography.H2,
+                            weight=ft.FontWeight.BOLD,
+                            color=Colors.TEXT_DARK if not is_dark else Colors.TEXT_LIGHT,
+                        ),
+                        ft.Text(
+                            "This directory doesn't appear to be a Claude Code project.\n"
+                            "Claude Code projects should have a .claude/ directory or CLAUDE.md file.",
+                            size=Typography.BODY_MD,
+                            color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
+                            text_align=ft.TextAlign.CENTER,
+                        ),
+                    ],
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=Spacing.MD,
+                ),
             ),
             padding=Spacing.XL,
             alignment=ft.alignment.center,
@@ -222,11 +224,13 @@ class HealthScanPage:
                                         size=48,
                                         weight=ft.FontWeight.BOLD,
                                         color=indicator_color,
+                                        selectable=True,
                                     ),
                                     ft.Text(
                                         "/ 100",
                                         size=Typography.BODY_MD,
                                         color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
+                                        selectable=True,
                                     ),
                                 ],
                                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -241,17 +245,20 @@ class HealthScanPage:
                                     size=Typography.CAPTION,
                                     weight=ft.FontWeight.BOLD,
                                     color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
+                                    selectable=True,
                                 ),
                                 ft.Text(
                                     score_label,
                                     size=Typography.H2,
                                     weight=ft.FontWeight.BOLD,
                                     color=Colors.TEXT_DARK if not is_dark else Colors.TEXT_LIGHT,
+                                    selectable=True,
                                 ),
                                 ft.Text(
                                     f"{len(self.health_report.issues)} issues found",
                                     size=Typography.BODY_SM,
                                     color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
+                                    selectable=True,
                                 ),
                             ],
                             spacing=Spacing.XS,
@@ -264,6 +271,16 @@ class HealthScanPage:
                 bgcolor=ft.Colors.with_opacity(0.05, indicator_color),
                 border=ft.border.all(2, indicator_color),
                 border_radius=Radius.LG,
+            ),
+            ft.Container(height=Spacing.SM),
+            # Save report button
+            ft.Container(
+                content=ft.ElevatedButton(
+                    "Save Report",
+                    icon=ft.Icons.SAVE_ALT_ROUNDED,
+                    on_click=self._on_save_report,
+                ),
+                alignment=ft.alignment.center_right,
             ),
             ft.Container(height=Spacing.MD),
         ]
@@ -286,11 +303,13 @@ class HealthScanPage:
                                 size=Typography.H2,
                                 weight=ft.FontWeight.BOLD,
                                 color=Colors.TEXT_DARK if not is_dark else Colors.TEXT_LIGHT,
+                                selectable=True,
                             ),
                             ft.Text(
                                 "Your Claude Code project looks healthy.",
                                 size=Typography.BODY_MD,
                                 color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
+                                selectable=True,
                             ),
                         ],
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -301,12 +320,14 @@ class HealthScanPage:
                 )
             )
 
-        # Results layout
+        # Results layout - wrap in SelectionArea to enable text selection
         return ft.Container(
-            content=ft.Column(
-                controls,
-                spacing=Spacing.SM,
-                scroll=ft.ScrollMode.AUTO,
+            content=ft.SelectionArea(
+                content=ft.Column(
+                    controls,
+                    spacing=Spacing.SM,
+                    scroll=ft.ScrollMode.AUTO,
+                ),
             ),
             expand=True,
             padding=Spacing.MD,
@@ -333,6 +354,7 @@ class HealthScanPage:
                                                 size=Typography.CAPTION,
                                                 weight=ft.FontWeight.BOLD,
                                                 color=color,
+                                                selectable=True,
                                             ),
                                             ft.Container(
                                                 width=2,
@@ -343,6 +365,7 @@ class HealthScanPage:
                                                 issue.rule_id,
                                                 size=Typography.CAPTION,
                                                 color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
+                                                selectable=True,
                                             ),
                                         ],
                                         spacing=Spacing.SM,
@@ -352,6 +375,7 @@ class HealthScanPage:
                                         size=Typography.BODY_LG,
                                         weight=ft.FontWeight.BOLD,
                                         color=Colors.TEXT_DARK if not is_dark else Colors.TEXT_LIGHT,
+                                        selectable=True,
                                     ),
                                 ],
                                 spacing=Spacing.XS,
@@ -366,6 +390,7 @@ class HealthScanPage:
                         issue.message,
                         size=Typography.BODY_MD,
                         color=Colors.TEXT_DARK if not is_dark else Colors.TEXT_LIGHT,
+                        selectable=True,
                     ),
                     ft.Container(height=Spacing.SM),
                     # Suggestion
@@ -377,11 +402,13 @@ class HealthScanPage:
                                     size=Typography.BODY_SM,
                                     weight=ft.FontWeight.BOLD,
                                     color=Colors.TEXT_DARK if not is_dark else Colors.TEXT_LIGHT,
+                                    selectable=True,
                                 ),
                                 ft.Text(
                                     issue.suggestion,
                                     size=Typography.BODY_SM,
                                     color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
+                                    selectable=True,
                                 ),
                             ],
                             spacing=Spacing.XS,
@@ -406,6 +433,7 @@ class HealthScanPage:
                                         str(issue.file_path),
                                         size=Typography.TINY,
                                         color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
+                                        selectable=True,
                                     ),
                                 ],
                                 spacing=Spacing.XS,
@@ -422,6 +450,136 @@ class HealthScanPage:
             border_radius=Radius.MD,
             bgcolor=ft.Colors.with_opacity(0.02, color) if not is_dark else ft.Colors.with_opacity(0.05, color),
         )
+
+    def _format_report_as_text(self) -> str:
+        """Format the health report as plain text for export."""
+        if not self.health_report:
+            return ""
+
+        checker = get_health_checker()
+        score_label = checker.get_score_label(self.health_report.score)
+
+        lines = []
+        lines.append("=" * 70)
+        lines.append("CLAUDE CODE HEALTH REPORT")
+        lines.append("=" * 70)
+        lines.append(f"\nProject: {self.health_report.project_path}")
+        lines.append(f"Health Score: {self.health_report.score}/100 ({score_label})")
+        lines.append(f"Detectors Run: {self.health_report.detectors_run}")
+        lines.append(f"Issues Found: {len(self.health_report.issues)}")
+        lines.append("")
+
+        if not self.health_report.issues:
+            lines.append("✅ No issues found! Your Claude Code project looks healthy.")
+        else:
+            # Group issues by severity
+            critical_issues = [i for i in self.health_report.issues if i.severity == Severity.CRITICAL]
+            warning_issues = [i for i in self.health_report.issues if i.severity == Severity.WARNING]
+            info_issues = [i for i in self.health_report.issues if i.severity == Severity.INFO]
+
+            for issues, severity_name, emoji in [
+                (critical_issues, "CRITICAL", "🔴"),
+                (warning_issues, "WARNING", "🟡"),
+                (info_issues, "INFO", "🔵"),
+            ]:
+                if issues:
+                    lines.append(f"\n{emoji} {severity_name} ISSUES ({len(issues)})")
+                    lines.append("-" * 70)
+                    for issue in issues:
+                        lines.append(f"\n[{issue.rule_id}] {issue.title}")
+                        lines.append(f"Message: {issue.message}")
+                        lines.append(f"Suggestion: {issue.suggestion}")
+                        if issue.file_path:
+                            lines.append(f"File: {issue.file_path}")
+                        if issue.topic_slug:
+                            lines.append(f"Learn more: {issue.topic_slug}")
+                        lines.append("")
+
+        lines.append("=" * 70)
+        lines.append(f"Generated by Claude Code Coach (C3)")
+        lines.append("=" * 70)
+
+        return "\n".join(lines)
+
+    def _on_save_report(self, e):
+        """Handle save report button click - open file picker and save report."""
+        if not self.health_report:
+            return
+
+        try:
+            # Generate default filename with timestamp
+            from datetime import datetime
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            default_name = f"health_report_{timestamp}.txt"
+
+            # Use AppleScript to open native macOS file save dialog
+            script = f'''
+            tell application "System Events"
+                activate
+                set theFile to choose file name with prompt "Save Health Report" default name "{default_name}"
+                return POSIX path of theFile
+            end tell
+            '''
+
+            print(f"Opening file save dialog with default name: {default_name}")
+
+            result = subprocess.run(
+                ['osascript', '-e', script],
+                capture_output=True,
+                text=True,
+                timeout=300  # 5 minute timeout
+            )
+
+            print(f"Dialog result - returncode: {result.returncode}")
+            print(f"Dialog result - stdout: '{result.stdout}'")
+            print(f"Dialog result - stderr: '{result.stderr}'")
+
+            if result.returncode == 0 and result.stdout.strip():
+                # Successfully got a file path - clean it up
+                file_path_str = result.stdout.strip()
+                file_path = Path(file_path_str)
+
+                print(f"Attempting to save to: {file_path}")
+
+                # Format and save the report
+                report_text = self._format_report_as_text()
+
+                print(f"Report text length: {len(report_text)} characters")
+
+                # Ensure parent directory exists
+                file_path.parent.mkdir(parents=True, exist_ok=True)
+
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(report_text)
+
+                print(f"File saved successfully to: {file_path}")
+                print(f"File exists: {file_path.exists()}")
+                if file_path.exists():
+                    print(f"File size: {file_path.stat().st_size} bytes")
+
+                # Show success message
+                self.page.snack_bar = ft.SnackBar(
+                    content=ft.Text(f"Report saved to {file_path.name}"),
+                    bgcolor=Colors.GREEN_500,
+                )
+                self.page.snack_bar.open = True
+                self.page.update()
+            else:
+                print(f"Dialog cancelled or failed - returncode: {result.returncode}")
+            # returncode 128 = user cancelled, don't show error
+
+        except subprocess.TimeoutExpired:
+            print("File save dialog timed out")
+        except Exception as ex:
+            print(f"Failed to save report - Exception: {str(ex)}")
+            import traceback
+            traceback.print_exc()
+            self.page.snack_bar = ft.SnackBar(
+                content=ft.Text(f"Error saving report: {str(ex)}"),
+                bgcolor=Colors.RED_500,
+            )
+            self.page.snack_bar.open = True
+            self.page.update()
 
     def build(self) -> ft.Control:
         """Build health scan page"""

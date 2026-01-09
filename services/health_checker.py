@@ -11,8 +11,8 @@ from pathlib import Path
 from typing import List, Optional
 from health_checks.base import BaseDetector, HealthIssue, Severity
 
-# Import all detectors
-from health_checks.critical.bloated_claude_md import BloatedClaudeMdDetector
+# Import detector registry
+from health_checks import get_all_detectors
 
 
 @dataclass
@@ -40,11 +40,8 @@ class HealthChecker:
     """Runs health checks on Claude Code projects."""
 
     def __init__(self):
-        # Register all detectors
-        self.detectors: List[BaseDetector] = [
-            BloatedClaudeMdDetector(),
-            # Add more detectors here as they're created
-        ]
+        # Get all registered detectors
+        self.detectors: List[BaseDetector] = get_all_detectors()
 
     def check_project(
         self, project_path: Path, config: Optional[dict] = None

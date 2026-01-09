@@ -1,15 +1,24 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python *)",
-      "Bash(pip install *)",
-      "Bash(flet *)",
-      "Bash(git *)",
-      "Read(*)"
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "TodoRead",
+      "TodoWrite",
+      "Task",
+      "Skill"
     ],
     "deny": [
-      "Bash(rm -rf *)",
-      "Bash(git push origin main:*)"
+      "Bash(git push origin main*)",
+      "Bash(git push origin master*)",
+      "Bash(git push --force*)",
+      "Bash(rm -rf /)*",
+      "Bash(rm -rf .git*)",
+      "Bash(rm -rf ~*)"
     ]
   }
 }

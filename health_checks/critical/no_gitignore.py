@@ -1,0 +1,45 @@
+"""
+Detector for missing .gitignore file.
+
+A .gitignore file is essential for preventing accidental commits of secrets,
+build artifacts, and local settings.
+"""
+
+from pathlib import Path
+from typing import Optional
+from health_checks.base import BaseDetector, HealthIssue, Severity
+from health_checks import register
+
+
+@register
+class NoGitignoreDetector(BaseDetector):
+    """Detects when .gitignore file is missing."""
+
+    rule_id = "no-gitignore"
+    severity = Severity.CRITICAL
+    title = "No .gitignore file found"
+
+    def check(self, project_path: Path, config: dict) -> Optional[HealthIssue]:
+        """
+        Check if .gitignore exists at project root.
+
+        Args:
+            project_path: Root path of the Claude Code project
+            config: Parsed .claude/ configuration (if exists)
+
+        Returns:
+            HealthIssue if .gitignore is missing, None otherwise
+        """
+        gitignore_path = project_path / ".gitignore"
+
+        if not gitignore_path.exists():
+            return HealthIssue(
+                rule_id=self.rule_id,
+                severity=self.severity,
+                title=self.title,
+                message="No .gitignore file found",
+                suggestion="Create .gitignore to prevent committing secrets, build artifacts, and local settings",
+                topic_slug="git-health"
+            )
+
+        return None
