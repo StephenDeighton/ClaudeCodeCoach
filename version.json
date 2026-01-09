@@ -1,5 +1,7 @@
 {
   "version": "0.1.0",
   "build_number": 1,
-  "app_name": "Claude Code Coach"
+  "app_name": "Claude Code Coach",
+  "build_date": "2026-01-09",
+  "build_time": "10:00:00 UTC"
 }
