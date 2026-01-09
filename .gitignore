@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+venv_312/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Flet
+.flet/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# App builds
+build/
+*.app
+*.dmg
+
+# Databases
+*.db
+*.db-wal
+*.db-shm
+coach.db*
+
+# Logs
+*.log
+
+# Test data
+test_data/
+
+# User config
+.coach/

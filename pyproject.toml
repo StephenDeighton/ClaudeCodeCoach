@@ -1,0 +1,159 @@
+[project]
+name = "ClaudeCodeCoach"
+version = "1.0.0"
+description = "Email management and classification system"
+requires-python = ">=3.12"
+dependencies = [
+    "flet==0.28.3",
+    "pypdf>=4.0.0",
+    "python-docx>=1.1.0",
+    "openpyxl>=3.1.0",
+    "python-pptx>=0.6.23",
+    "google-auth-oauthlib>=1.0.0",
+    "google-api-python-client>=2.0.0",
+]
+
+[tool.flet]
+# Flet build configuration
+
+[tool.flet.app]
+# Files and directories to exclude from the app package
+# This is the preferred method for managing exclusions - more maintainable than CLI flags
+exclude = [
+    # Virtual environments - These are HUGE and should never be packaged
+    "venv",
+    "venv_312",
+    ".venv",
+    "env",
+
+    # Version control
+    ".git",
+    ".gitignore",
+    ".gitattributes",
+
+    # IDE and editor files
+    ".claude",
+    ".vscode",
+    ".idea",
+    ".vs",
+    "*.swp",
+    "*.swo",
+    "*~",
+
+    # Database files (user data - should not be bundled)
+    "*.db",
+    "*.db-shm",
+    "*.db-wal",
+    "*.sqlite",
+    "*.sqlite3",
+
+    # Email data (user data - should not be bundled)
+    "*.mbox",
+    "attachments",
+
+    # Logs and temporary files
+    "logs",
+    "*.log",
+    "build.log",
+    "*.tmp",
+    "*.temp",
+
+    # Build artifacts and installers
+    "*.dmg",
+    "*.zip",
+    "*.tar.gz",
+    "*.pkg",
+    "installer",
+    "dist",
+
+    # Documentation files (user doesn't need these in packaged app)
+    "*.md",
+    "README.md",
+    "STEP1_RESULTS.md",
+    "STEP2_RESULTS.md",
+    "WHEN_YOU_RETURN.md",
+    "package_status.md",
+    "status.md",
+    "plan.md",
+    "DATABASE_SWITCHING.md",
+    "CONTRIBUTING.md",
+    "LICENSE.md",
+
+    # Test files
+    "test_*.py",
+    "*_test.py",
+    "tests/",
+    "test/",
+    "__tests__/",
+
+    # Specific test/dev scripts to exclude
+    "full_import_all_accounts.py",
+    "test_import_007.py",
+    "test_startup.py",
+    "import_classifications.py",
+    "consolidate_contacts.py",
+
+    # Build and development scripts (shouldn't be in packaged app)
+    "build_app.sh",
+    "build_app_step2.sh",
+    "build_app_step3.sh",
+    "create_installer.sh",
+    "create_dmg.sh",
+    "create_app_icon.py",
+    "run.sh",
+    "setup.py",
+    "setup.cfg",
+
+    # Analysis and results documentation (not needed in packaged app)
+    "STEP1_RESULTS.md",
+    "STEP2_RESULTS.md",
+    "STEP3_RESULTS.md",
+    "package_status.md",
+
+    # Build configuration (not needed at runtime)
+    "pyproject.toml",
+    "requirements.txt",
+
+    # Duplicate SQL files (already in assets/)
+    "create_optimized_schema.sql",
+
+    # Python cache and compiled files (these are regenerated)
+    "__pycache__",
+    "*.pyc",
+    "*.pyo",
+    "*.pyd",
+    ".Python",
+
+    # OS-specific files
+    ".DS_Store",
+    "Thumbs.db",
+    "desktop.ini",
+
+    # Flet-specific
+    ".flet",
+    ".flet_cache",
+
+    # CI/CD
+    ".github",
+    ".gitlab-ci.yml",
+    ".travis.yml",
+    "azure-pipelines.yml",
+
+    # Coverage and testing tools
+    ".coverage",
+    ".pytest_cache",
+    ".tox",
+    "htmlcov",
+    ".mypy_cache",
+    ".ruff_cache",
+]
+
+[tool.flet.macos]
+# macOS-specific build settings
+# project = "ClaudeCodeCoach"
+# org = "com.coach"
+# product = "ClaudeCodeCoach"
+
+[tool.flet.macos.app]
+# macOS-specific exclusions (inherits from [tool.flet.app] above)
+# Add any macOS-specific exclusions here if needed
