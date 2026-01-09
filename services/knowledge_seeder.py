@@ -319,28 +319,64 @@ def seed_issue_links(conn: sqlite3.Connection) -> None:
         conn: Database connection
     """
     # Map health check rule IDs to topic slugs
+    # IMPORTANT: Use actual detector rule_id values from health_checks/
     issue_links = [
-        ("no-claude-md", "claude-md-basics"),
-        ("no-claude-md", "project-setup-guide"),
-        ("empty-claude-md", "claude-md-best-practices"),
-        ("skills-without-claude-md", "skills-vs-claude-md"),
+        # CLAUDE.md and project setup
+        ("bloated_claude_md", "claude-md-best-practices"),
+        ("bloated_claude_md", "context-efficiency"),
+        ("bloated_claude_md", "writing-clear-instructions"),
+        ("no-readme", "project-setup-guide"),
+
+        # Git and version control
         ("no-gitignore", "gitignore-setup"),
-        ("claude-cache-not-ignored", "gitignore-setup"),
-        ("no-model-config", "model-selection"),
-        ("model-config-invalid", "model-selection"),
-        ("anthropic-xml-in-md", "xml-tags-guide"),
-        ("no-task-breakdown", "task-breakdown-strategies"),
-        ("vague-instructions", "writing-clear-instructions"),
-        ("missing-examples", "providing-examples"),
-        ("no-file-conventions", "file-conventions"),
-        ("no-code-style", "code-style-guide"),
-        ("overly-long-md", "context-efficiency"),
-        ("large-files-in-project", "managing-large-files"),
-        ("no-test-guidance", "test-guidance"),
-        ("missing-context-in-skills", "skill-context-patterns"),
-        ("recursive-skill-calls", "skill-antipatterns"),
-        ("skill-without-description", "skill-best-practices"),
-        ("deprecated-features", "migration-guides"),
+        ("no-worktrees-setup", "git-worktrees"),
+
+        # Models and configuration
+        ("model-not-set", "model-selection"),
+        ("thinking-not-enabled", "extended-thinking"),
+
+        # Skills, Commands, Agents
+        ("no-skills-dir", "skills-overview"),
+        ("no-skills-dir", "creating-skills"),
+        ("no-commands-dir", "commands-overview"),
+        ("no-commands-dir", "creating-commands"),
+        ("no-agents-dir", "agents-overview"),
+        ("no-agents-dir", "creating-agents"),
+
+        # Hooks
+        ("no-hooks", "hooks-overview"),
+        ("no-hooks", "hooks-patterns"),
+
+        # Planning and workflow
+        ("no-planning-docs", "task-breakdown-strategies"),
+        ("no-planning-docs", "planning-phase"),
+        ("no-planning-docs", "psb-overview"),
+        ("no-status-md", "project-setup-guide"),
+
+        # File management and context
+        ("large-files", "managing-large-files"),
+        ("large-files", "context-efficiency"),
+
+        # Testing
+        ("no-tests-dir", "test-guidance"),
+        ("no-tests-dir", "testing-with-claude"),
+
+        # Documentation
+        ("no-changelog-md", "documentation-patterns"),
+        ("no-architecture-md", "documentation-patterns"),
+
+        # CI/CD
+        ("no-github-actions", "automated-docs"),
+
+        # Commands
+        ("no-init-command", "commands-overview"),
+        ("no-commit-command", "commit-workflow"),
+
+        # Environment
+        ("missing-env-example", "project-setup-guide"),
+
+        # Security
+        ("secrets-exposed", "gitignore-setup"),
     ]
 
     cursor = conn.cursor()
