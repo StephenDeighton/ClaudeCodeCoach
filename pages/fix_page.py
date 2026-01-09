@@ -7,6 +7,8 @@ import flet as ft
 from theme import Colors, Spacing, Radius, Typography, section_header, divider
 from services.app_state import get_last_scan
 from health_checks.base import Severity
+from pages.components.fix_card import build_fix_card
+from pages.components.filter_controls import build_filter_controls
 
 
 class FixPage:
@@ -209,146 +211,14 @@ class FixPage:
 
     def _build_fix_card(self, issue, emoji: str, color: str, is_dark: bool):
         """Build a card for a single issue with fix prompt."""
-        has_fix_prompt = issue.fix_prompt is not None and issue.fix_prompt.strip() != ""
-
-        # Create checkbox for this issue
-        checkbox = ft.Checkbox(
-            value=self.selected_issues.get(issue.rule_id, False),
-            on_change=lambda e: self._on_issue_selected(e, issue),
-        )
-
-        # Build the card content
-        card_controls = [
-            # Header with checkbox
-            ft.Row(
-                [
-                    checkbox,
-                    ft.Text(emoji, size=24),
-                    ft.Column(
-                        [
-                            ft.Row(
-                                [
-                                    ft.Text(
-                                        issue.severity.value.upper(),
-                                        size=Typography.CAPTION,
-                                        weight=ft.FontWeight.BOLD,
-                                        color=color,
-                                        selectable=True,
-                                    ),
-                                    ft.Container(
-                                        width=2,
-                                        height=12,
-                                        bgcolor=Colors.LIGHT_BORDER_STRONG if not is_dark else Colors.PRIMARY_500,
-                                    ),
-                                    ft.Text(
-                                        issue.rule_id,
-                                        size=Typography.CAPTION,
-                                        color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
-                                        selectable=True,
-                                    ),
-                                ],
-                                spacing=Spacing.SM,
-                            ),
-                            ft.Text(
-                                issue.title,
-                                size=Typography.BODY_LG,
-                                weight=ft.FontWeight.BOLD,
-                                color=Colors.TEXT_DARK if not is_dark else Colors.TEXT_LIGHT,
-                                selectable=True,
-                            ),
-                        ],
-                        spacing=Spacing.XS,
-                        expand=True,
-                    ),
-                ],
-                spacing=Spacing.SM,
-            ),
-            ft.Container(height=Spacing.SM),
-            # Message
-            ft.Text(
-                issue.message,
-                size=Typography.BODY_MD,
-                color=Colors.TEXT_DARK if not is_dark else Colors.TEXT_LIGHT,
-                selectable=True,
-            ),
-        ]
-
-        # Add fix prompt section if available
-        if has_fix_prompt:
-            card_controls.extend([
-                ft.Container(height=Spacing.MD),
-                # Fix prompt section
-                ft.Container(
-                    content=ft.Column(
-                        [
-                            ft.Row(
-                                [
-                                    ft.Text(
-                                        "🔧 Fix Prompt",
-                                        size=Typography.BODY_SM,
-                                        weight=ft.FontWeight.BOLD,
-                                        color=Colors.TEXT_DARK if not is_dark else Colors.TEXT_LIGHT,
-                                    ),
-                                    ft.Container(expand=True),
-                                    ft.ElevatedButton(
-                                        "Copy Prompt",
-                                        icon=ft.Icons.CONTENT_COPY_ROUNDED,
-                                        on_click=lambda e, prompt=issue.fix_prompt, title=issue.title: self._copy_to_clipboard(prompt, title),
-                                        height=32,
-                                    ),
-                                ],
-                                spacing=Spacing.SM,
-                            ),
-                            ft.Container(height=Spacing.XS),
-                            ft.Container(
-                                content=ft.Text(
-                                    issue.fix_prompt,
-                                    size=Typography.BODY_SM,
-                                    color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
-                                    selectable=True,
-                                    max_lines=5,
-                                    overflow=ft.TextOverflow.ELLIPSIS,
-                                ),
-                                padding=Spacing.SM,
-                                bgcolor=ft.Colors.with_opacity(0.5, Colors.PRIMARY_900 if is_dark else Colors.LIGHT_BORDER),
-                                border_radius=Radius.SM,
-                            ),
-                        ],
-                        spacing=Spacing.XS,
-                    ),
-                    padding=Spacing.MD,
-                    bgcolor=ft.Colors.with_opacity(0.05, Colors.ACCENT_500),
-                    border_radius=Radius.MD,
-                    border=ft.border.all(1, ft.Colors.with_opacity(0.3, Colors.ACCENT_500)),
-                ),
-            ])
-        else:
-            # No fix prompt available
-            card_controls.extend([
-                ft.Container(height=Spacing.SM),
-                ft.Container(
-                    content=ft.Text(
-                        "💡 " + issue.suggestion,
-                        size=Typography.BODY_SM,
-                        color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
-                        selectable=True,
-                    ),
-                    padding=Spacing.MD,
-                    bgcolor=ft.Colors.with_opacity(0.03, color),
-                    border_radius=Radius.MD,
-                    border=ft.border.all(1, ft.Colors.with_opacity(0.2, color)),
-                ),
-            ])
-
-        return ft.Container(
-            content=ft.Column(
-                card_controls,
-                spacing=Spacing.XS,
-            ),
-            padding=Spacing.MD,
-            border=ft.border.all(2, Colors.LIGHT_BORDER_STRONG if not is_dark else Colors.PRIMARY_500),
-            border_radius=Radius.MD,
-            bgcolor=ft.Colors.with_opacity(0.02, color) if not is_dark else ft.Colors.with_opacity(0.05, color),
+        return build_fix_card(
+            issue=issue,
+            emoji=emoji,
+            color=color,
+            is_dark=is_dark,
+            selected_issues=self.selected_issues,
+            on_issue_selected=self._on_issue_selected,
+            on_copy_to_clipboard=self._copy_to_clipboard,
         )
 
     def build(self) -> ft.Control:
@@ -382,65 +252,15 @@ class FixPage:
                     ),
                     divider(is_dark=is_dark),
                     # Filters and sort
-                    ft.Container(
-                        content=ft.Row(
-                            [
-                                # Filter dropdown
-                                ft.Column(
-                                    [
-                                        ft.Text(
-                                            "Filter by Severity",
-                                            size=Typography.CAPTION,
-                                            weight=ft.FontWeight.BOLD,
-                                            color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
-                                        ),
-                                        ft.Dropdown(
-                                            value="All",
-                                            options=[
-                                                ft.dropdown.Option("All", f"All ({critical_count + warning_count + info_count})"),
-                                                ft.dropdown.Option("CRITICAL", f"Critical ({critical_count})"),
-                                                ft.dropdown.Option("WARNING", f"Warning ({warning_count})"),
-                                                ft.dropdown.Option("INFO", f"Info ({info_count})"),
-                                            ],
-                                            on_change=self._on_filter_change,
-                                            width=200,
-                                        ),
-                                    ],
-                                    spacing=Spacing.XS,
-                                ),
-                                ft.Container(width=Spacing.MD),
-                                # Sort dropdown
-                                ft.Column(
-                                    [
-                                        ft.Text(
-                                            "Sort by",
-                                            size=Typography.CAPTION,
-                                            weight=ft.FontWeight.BOLD,
-                                            color=Colors.TEXT_DARK_MUTED if not is_dark else Colors.TEXT_LIGHT_MUTED,
-                                        ),
-                                        ft.Dropdown(
-                                            value="severity",
-                                            options=[
-                                                ft.dropdown.Option("severity", "Severity"),
-                                                ft.dropdown.Option("title", "Title"),
-                                            ],
-                                            on_change=self._on_sort_change,
-                                            width=150,
-                                        ),
-                                    ],
-                                    spacing=Spacing.XS,
-                                ),
-                                ft.Container(width=Spacing.MD),
-                                # Export button
-                                self.export_button,
-                                ft.Container(expand=True),
-                                # Stats
-                                self.stats_text,
-                            ],
-                            alignment=ft.MainAxisAlignment.START,
-                            vertical_alignment=ft.CrossAxisAlignment.END,
-                        ),
-                        padding=Spacing.MD,
+                    build_filter_controls(
+                        critical_count=critical_count,
+                        warning_count=warning_count,
+                        info_count=info_count,
+                        on_filter_change=self._on_filter_change,
+                        on_sort_change=self._on_sort_change,
+                        export_button=self.export_button,
+                        stats_text=self.stats_text,
+                        is_dark=is_dark,
                     ),
                     ft.Container(height=Spacing.SM),
                     # Issues container
