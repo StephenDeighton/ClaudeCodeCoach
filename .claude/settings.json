@@ -20,5 +20,15 @@
       "Bash(rm -rf .git*)",
       "Bash(rm -rf ~*)"
     ]
+  },
+  "env": {
+    "ANTHROPIC_MODEL": "sonnet-4.5",
+    "MAX_THINKING_TOKENS": "10000"
+  },
+  "hooks": {
+    "SessionStart:startup": {
+      "command": "echo '✓ C3 session started - Run tests with: python3 -m pytest tests/'",
+      "blocking": false
+    }
   }
 }

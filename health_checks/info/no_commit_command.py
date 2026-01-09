@@ -18,6 +18,35 @@ class NoCommitCommandDetector(BaseDetector):
     severity = Severity.INFO
     title = "No /commit command found"
 
+    fix_prompt = """My project would benefit from a /commit command for consistent git workflow.
+
+Please create .claude/commands/commit.md:
+
+1. **Check git status** - show what will be committed
+2. **Review changes** - show git diff
+3. **Create commit message** following project conventions:
+   - Analyze recent commits for style (conventional commits, etc.)
+   - Generate descriptive message
+   - Include Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+
+4. **Stage and commit**:
+   - Add relevant files
+   - Create the commit
+   - Show status after
+
+Command structure:
+```markdown
+---
+name: commit
+description: Create a git commit with best practices
+---
+
+[Steps above]
+```
+
+Invoke with: `/commit`
+This ensures consistent commit messages and workflow."""
+
     def check(self, project_path: Path, config: dict) -> Optional[HealthIssue]:
         """
         Check if .claude/commands/commit.md exists.
@@ -38,6 +67,7 @@ class NoCommitCommandDetector(BaseDetector):
                 title=self.title,
                 message="No /commit command found",
                 suggestion="Create .claude/commands/commit.md for consistent git workflow",
+                fix_prompt=self.fix_prompt,
                 topic_slug="custom-slash-commands"
             )
 

@@ -19,6 +19,38 @@ class LargeFilesDetector(BaseDetector):
     severity = Severity.WARNING
     title = "Large files detected"
 
+    fix_prompt = """My project has large files (>400 lines) that could be refactored for better Claude performance.
+
+Please help me refactor these files:
+
+1. **Analyze the largest files** to understand what they contain
+
+2. **Propose refactoring strategy**:
+   - Split by responsibility/concern
+   - Extract reusable utilities
+   - Separate data from logic
+   - Move types/interfaces to separate files
+
+3. **Create a refactoring plan**:
+   - Which files to split first (start with worst offenders)
+   - How to split them (what goes where)
+   - What to name the new files
+   - Update imports across codebase
+
+4. **Perform the refactoring**:
+   - Create new smaller files
+   - Move code systematically
+   - Update all imports
+   - Test that everything still works
+
+5. **Benefits of smaller files**:
+   - Claude processes them faster
+   - Easier to understand and maintain
+   - Better code organization
+   - Faster context loading
+
+Target: Keep files under 300 lines ideally, 400 lines maximum."""
+
     def check(self, project_path: Path, config: dict) -> Optional[HealthIssue]:
         """
         Check for files over 400 lines.
@@ -80,6 +112,7 @@ class LargeFilesDetector(BaseDetector):
                 title=self.title,
                 message=message,
                 suggestion="Consider breaking down large files. Claude performs better with smaller, focused modules.",
+                fix_prompt=self.fix_prompt,
                 topic_slug="troubleshooting-slow"
             )
 

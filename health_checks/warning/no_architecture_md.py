@@ -19,6 +19,43 @@ class NoArchitectureMdDetector(BaseDetector):
     severity = Severity.WARNING
     title = "No architecture documentation found"
 
+    fix_prompt = """My project needs architecture documentation to help Claude understand the system design.
+
+Please create architecture.md with:
+
+1. **System Overview**:
+   - What the system does (2-3 sentences)
+   - Key components and their roles
+   - High-level architecture diagram (ASCII or description)
+
+2. **Architecture Patterns**:
+   - MVC, microservices, layered, etc.
+   - Why this pattern was chosen
+   - How components interact
+
+3. **Tech Stack**:
+   - Languages and frameworks
+   - Databases and storage
+   - External services/APIs
+   - Development tools
+
+4. **Key Design Decisions**:
+   - Important architectural choices made
+   - Trade-offs considered
+   - Why alternatives were rejected
+
+5. **Module Organization**:
+   - Directory structure explained
+   - Where to find different types of code
+   - Naming conventions
+
+6. **Data Flow**:
+   - How data moves through the system
+   - Request/response lifecycle
+   - State management approach
+
+This helps Claude make better decisions aligned with your architecture."""
+
     def check(self, project_path: Path, config: dict) -> Optional[HealthIssue]:
         """
         Check if architecture.md exists.
@@ -47,5 +84,6 @@ class NoArchitectureMdDetector(BaseDetector):
             title=self.title,
             message="No architecture documentation found",
             suggestion="Create architecture.md to document system design. Helps Claude understand project structure.",
+            fix_prompt=self.fix_prompt,
             topic_slug="automated-documentation"
         )

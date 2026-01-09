@@ -10,6 +10,7 @@ from services.version import get_version_string
 from theme import Colors, Spacing, Radius, Typography, get_theme
 from pages.settings import SettingsPage
 from pages.health_scan import HealthScanPage
+from pages.fix_page import FixPage
 
 
 def main(page: ft.Page):
@@ -53,12 +54,14 @@ def main(page: ft.Page):
         page.update()
 
     health_scan_page = HealthScanPage(page)
+    fix_page = FixPage(page)
     settings_page = SettingsPage(page, on_theme_change=on_theme_change)
 
     # Page mapping
     pages = {
         0: health_scan_page,
-        1: settings_page,
+        1: fix_page,
+        2: settings_page,
     }
 
     # Navigation state
@@ -131,8 +134,9 @@ def main(page: ft.Page):
     def update_nav_buttons():
         """Update navigation buttons"""
         nav_buttons.controls = [
-            create_nav_button(ft.Icons.MEDICAL_SERVICES_OUTLINED, ft.Icons.MEDICAL_SERVICES_ROUNDED, "Health", 0),
-            create_nav_button(ft.Icons.SETTINGS_OUTLINED, ft.Icons.SETTINGS_ROUNDED, "Settings", 1),
+            create_nav_button(ft.Icons.SEARCH_ROUNDED, ft.Icons.SEARCH_ROUNDED, "Scan", 0),
+            create_nav_button(ft.Icons.BUILD_CIRCLE_OUTLINED, ft.Icons.BUILD_CIRCLE_ROUNDED, "Fix", 1),
+            create_nav_button(ft.Icons.SETTINGS_OUTLINED, ft.Icons.SETTINGS_ROUNDED, "Settings", 2),
         ]
 
     # Header

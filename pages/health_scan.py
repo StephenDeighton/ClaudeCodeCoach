@@ -5,10 +5,12 @@ Scan Claude Code projects for health issues
 
 import flet as ft
 import subprocess
+from datetime import datetime
 from pathlib import Path
 from theme import Colors, Spacing, Radius, Typography, section_header, divider
 from services.project_scanner import get_project_scanner
 from services.health_checker import get_health_checker
+from services.app_state import set_last_scan, ScanResult
 from health_checks.base import Severity
 
 
@@ -133,6 +135,17 @@ class HealthScanPage:
                 project_info.path,
                 project_info.parsed_config
             )
+
+            # Store scan results in app state for Fix page
+            scan_result = ScanResult(
+                project_path=project_info.path,
+                scan_time=datetime.now(),
+                score=self.health_report.score,
+                issues=self.health_report.issues,
+                detectors_run=self.health_report.detectors_run
+            )
+            set_last_scan(scan_result)
+
             self.results_container.content = self._build_results()
 
         self.page.update()
@@ -501,6 +514,20 @@ class HealthScanPage:
 
         return "\n".join(lines)
 
+    def _mac_path_to_posix(self, mac_path: str) -> str:
+        """
+        Convert Mac-style path (with colons) to POSIX path (with slashes).
+
+        Example: "Macintosh HD:Users:name:file.txt" -> "/Users/name/file.txt"
+        """
+        # Remove leading "Macintosh HD:" and convert colons to slashes
+        if mac_path.startswith("Macintosh HD:"):
+            mac_path = mac_path[len("Macintosh HD:"):]
+
+        # Replace colons with slashes
+        posix_path = "/" + mac_path.replace(":", "/")
+        return posix_path
+
     def _on_save_report(self, e):
         """Handle save report button click - open file picker and save report."""
         if not self.health_report:
@@ -513,12 +540,20 @@ class HealthScanPage:
             default_name = f"health_report_{timestamp}.txt"
 
             # Use AppleScript to open native macOS file save dialog
+            # Note: We handle both POSIX and Mac-style paths
             script = f'''
-            tell application "System Events"
-                activate
+            try
                 set theFile to choose file name with prompt "Save Health Report" default name "{default_name}"
-                return POSIX path of theFile
-            end tell
+                try
+                    set posixPath to POSIX path of theFile
+                    return "POSIX:" & posixPath
+                on error
+                    -- If POSIX conversion fails, return Mac-style path
+                    return "MAC:" & (theFile as text)
+                end try
+            on error errMsg number errNum
+                return "ERROR:" & errNum & ":" & errMsg
+            end try
             '''
 
             print(f"Opening file save dialog with default name: {default_name}")
@@ -534,9 +569,36 @@ class HealthScanPage:
             print(f"Dialog result - stdout: '{result.stdout}'")
             print(f"Dialog result - stderr: '{result.stderr}'")
 
+            # Check if output indicates an error
+            if result.stdout.strip().startswith("ERROR:"):
+                error_parts = result.stdout.strip().split(":", 3)
+                if len(error_parts) >= 3:
+                    error_num = error_parts[1]
+                    error_msg = error_parts[2] if len(error_parts) >= 3 else "Unknown error"
+                    print(f"AppleScript error {error_num}: {error_msg}")
+                # User cancelled or error occurred
+                return
+
             if result.returncode == 0 and result.stdout.strip():
-                # Successfully got a file path - clean it up
-                file_path_str = result.stdout.strip()
+                # Successfully got a file path
+                output = result.stdout.strip()
+
+                # Validate the path
+                if not output or output.startswith("ERROR:"):
+                    print("Invalid file path returned")
+                    return
+
+                # Handle different path formats
+                if output.startswith("POSIX:"):
+                    file_path_str = output[6:]  # Remove "POSIX:" prefix
+                elif output.startswith("MAC:"):
+                    mac_path = output[4:]  # Remove "MAC:" prefix
+                    file_path_str = self._mac_path_to_posix(mac_path)
+                    print(f"Converted Mac path to POSIX: {mac_path} -> {file_path_str}")
+                else:
+                    # Assume it's already a POSIX path
+                    file_path_str = output
+
                 file_path = Path(file_path_str)
 
                 print(f"Attempting to save to: {file_path}")

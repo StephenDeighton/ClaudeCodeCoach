@@ -19,6 +19,23 @@ class SecretsExposedDetector(BaseDetector):
     severity = Severity.CRITICAL
     title = "Secrets may be exposed"
 
+    fix_prompt = """URGENT: My project has sensitive files that are not protected by .gitignore.
+
+Please help me secure these files:
+
+1. Add the appropriate patterns to .gitignore
+2. If any secrets are already committed, tell me how to:
+   - Remove them from git history (using git filter-branch or BFG Repo-Cleaner)
+   - Rotate the exposed credentials
+3. Create .env.example showing required variables without values
+4. Document proper credential management in my README or CLAUDE.md
+
+After adding to .gitignore, run:
+   git add .gitignore
+   git commit -m "docs: add secret files to gitignore"
+
+NEVER commit the actual .env or settings.local.json files."""
+
     def check(self, project_path: Path, config: dict) -> Optional[HealthIssue]:
         """
         Check if sensitive files exist but are not in .gitignore.
@@ -62,6 +79,7 @@ class SecretsExposedDetector(BaseDetector):
                         title=self.title,
                         message=f"Secrets may be exposed - {file_pattern} is not in .gitignore",
                         suggestion=f"Add '{file_pattern}' to .gitignore to prevent committing secrets",
+                        fix_prompt=self.fix_prompt,
                         file_path=file_path,
                         topic_slug="credential-management"
                     )

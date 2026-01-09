@@ -22,6 +22,7 @@ class HealthIssue:
     suggestion: str
     file_path: Optional[Path] = None
     fix_template: Optional[str] = None
+    fix_prompt: Optional[str] = None  # Full prompt for Claude to fix the issue
     topic_slug: Optional[str] = None  # Links to knowledge base
 
 

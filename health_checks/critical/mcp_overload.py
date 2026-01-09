@@ -20,6 +20,32 @@ class McpOverloadDetector(BaseDetector):
     severity = Severity.CRITICAL
     title = "Too many MCP servers configured"
 
+    fix_prompt = """I have too many MCP servers configured, which bloats my context on startup.
+
+Please help me optimize my MCP server configuration:
+
+1. **Review my .claude/settings.json** - identify which servers I'm actually using
+2. **Create a lean configuration** with only essential servers (max 3)
+3. **Document disabled servers** - create a comment showing what was removed and why
+4. **Suggest alternatives** if I need the functionality:
+   - Can I use built-in tools instead?
+   - Can I combine server functionality?
+   - Can I enable servers conditionally per project?
+
+Remember: Each MCP server loads documentation into Claude's context at session start.
+Keep only the servers you use regularly.
+
+Example optimization:
+```json
+{
+  "mcpServers": {
+    "essential-server-1": { ... },
+    "essential-server-2": { ... }
+    // Removed: rarely-used-server, another-server
+  }
+}
+```"""
+
     def check(self, project_path: Path, config: dict) -> Optional[HealthIssue]:
         """
         Check if more than 3 MCP servers are configured.
@@ -64,6 +90,7 @@ class McpOverloadDetector(BaseDetector):
                 title=self.title,
                 message=f"{total_servers} MCP servers configured - this may bloat context on startup",
                 suggestion="Consider disabling unused MCP servers. Each server loads into context at session start.",
+                fix_prompt=self.fix_prompt,
                 topic_slug="mcp-context-warning"
             )
 

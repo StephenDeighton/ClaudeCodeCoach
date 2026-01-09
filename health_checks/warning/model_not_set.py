@@ -20,6 +20,35 @@ class ModelNotSetDetector(BaseDetector):
     severity = Severity.WARNING
     title = "No model explicitly configured"
 
+    fix_prompt = """I should explicitly set which Claude model to use for consistent behavior.
+
+Please help me configure the model:
+
+1. **Choose the right model for my needs**:
+   - **sonnet-4.5**: Daily coding work, fast iteration, cost-effective
+   - **opus-4.5**: Complex planning, architecture, critical decisions
+
+2. **Update .claude/settings.json** (or settings.local.json):
+   ```json
+   {
+     "env": {
+       "ANTHROPIC_MODEL": "sonnet-4.5"
+     }
+   }
+   ```
+
+3. **Strategic model usage tips**:
+   - Use sonnet-4.5 as default for 95% of work
+   - Switch to opus-4.5 for:
+     - Initial project planning
+     - Complex architecture decisions
+     - Difficult debugging sessions
+     - Security-critical code
+
+4. **Project-specific override**: Set model per-project for consistency across team
+
+Explicit model configuration prevents surprises from default changes."""
+
     def check(self, project_path: Path, config: dict) -> Optional[HealthIssue]:
         """
         Check if ANTHROPIC_MODEL is set in settings.
@@ -71,5 +100,6 @@ class ModelNotSetDetector(BaseDetector):
             title=self.title,
             message="No model explicitly configured - using defaults",
             suggestion="Set ANTHROPIC_MODEL in settings to ensure consistent model usage (sonnet-4.5 for daily work, opus-4.5 for complex planning)",
+            fix_prompt=self.fix_prompt,
             topic_slug="strategic-model-usage"
         )

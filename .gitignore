@@ -51,3 +51,6 @@ test_data/
 # Secrets and sensitive files
 .env
 .claude/settings.local.json
+
+# Git worktrees for parallel Claude instances
+.trees/

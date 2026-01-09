@@ -19,6 +19,35 @@ class ThinkingNotEnabledDetector(BaseDetector):
     severity = Severity.WARNING
     title = "Extended thinking not configured"
 
+    fix_prompt = """My project should enable extended thinking for deeper reasoning on complex tasks.
+
+Please configure MAX_THINKING_TOKENS in my settings:
+
+1. **Update .claude/settings.json** (or settings.local.json):
+   ```json
+   {
+     "env": {
+       "MAX_THINKING_TOKENS": "10000"
+     }
+   }
+   ```
+
+2. **What this enables:**
+   - Claude can reason more deeply before responding
+   - Better handling of complex architectural decisions
+   - More thorough consideration of edge cases
+   - Improved debugging and problem-solving
+
+3. **When to use thinking:**
+   - Complex refactoring decisions
+   - Architecture planning
+   - Bug investigation
+   - Performance optimization
+   - Security considerations
+
+Note: Extended thinking uses additional tokens but dramatically improves quality for complex tasks.
+Recommended value: 10000 tokens (adjustable based on needs)."""
+
     def check(self, project_path: Path, config: dict) -> Optional[HealthIssue]:
         """
         Check if MAX_THINKING_TOKENS is set in settings.
@@ -56,5 +85,6 @@ class ThinkingNotEnabledDetector(BaseDetector):
             title=self.title,
             message="Extended thinking not configured",
             suggestion="Set MAX_THINKING_TOKENS: 10000 for deeper reasoning on complex tasks",
+            fix_prompt=self.fix_prompt,
             topic_slug="extended-thinking"
         )

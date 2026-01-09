@@ -20,6 +20,45 @@ class NoHooksDetector(BaseDetector):
     severity = Severity.WARNING
     title = "No hooks configured"
 
+    fix_prompt = """My project could benefit from Claude Code hooks for automation and workflow enhancement.
+
+Please set up useful hooks in .claude/settings.json:
+
+1. **Session start hook** - runs when Claude starts:
+   ```json
+   {
+     "hooks": {
+       "SessionStart:startup": {
+         "command": "echo '✓ Session started'",
+         "blocking": false
+       }
+     }
+   }
+   ```
+
+2. **Common useful hooks:**
+   - `Write:format` - Auto-format code after writing files
+   - `SessionEnd:cleanup` - Clean up temp files on exit
+   - `Bash:log` - Log all bash commands for auditing
+   - `SessionStart:git-status` - Show git status on startup
+
+3. **Example: Auto-format Python**:
+   ```json
+   {
+     "hooks": {
+       "Write:format": {
+         "command": "black {file_path} 2>/dev/null || true",
+         "blocking": false,
+         "filePatterns": ["*.py"]
+       }
+     }
+   }
+   ```
+
+4. **Suggest hooks appropriate for my project's tech stack**
+
+Hooks automate repetitive tasks and ensure consistency across sessions."""
+
     def check(self, project_path: Path, config: dict) -> Optional[HealthIssue]:
         """
         Check if any hooks are configured in settings.
@@ -57,5 +96,6 @@ class NoHooksDetector(BaseDetector):
             title=self.title,
             message="No hooks configured",
             suggestion="Consider adding hooks for auto-formatting, logging, or custom workflows",
+            fix_prompt=self.fix_prompt,
             topic_slug="hooks-system"
         )
