@@ -140,46 +140,64 @@ def seed_categories(conn: sqlite3.Connection) -> None:
             "sort_order": 1,
         },
         {
+            "slug": "session-management",
+            "name": "Session Management",
+            "description": "Starting, stopping, and managing Claude Code sessions",
+            "sort_order": 2,
+        },
+        {
+            "slug": "permission-modes",
+            "name": "Permission Modes",
+            "description": "Understanding and configuring permission modes",
+            "sort_order": 3,
+        },
+        {
+            "slug": "configuration",
+            "name": "Configuration",
+            "description": "Configuring Claude Code settings and preferences",
+            "sort_order": 4,
+        },
+        {
             "slug": "project-setup",
             "name": "Project Setup",
             "description": "Setting up and configuring Claude Code projects",
-            "sort_order": 2,
+            "sort_order": 5,
         },
         {
             "slug": "psb-workflow",
             "name": "PSB Workflow",
             "description": "Plan-Scan-Build and other workflow patterns",
-            "sort_order": 3,
+            "sort_order": 6,
         },
         {
             "slug": "feature-selection",
             "name": "Feature Selection",
             "description": "Choosing and using Claude Code features effectively",
-            "sort_order": 4,
+            "sort_order": 7,
         },
         {
             "slug": "models",
             "name": "Models & Performance",
             "description": "Understanding and selecting Claude models",
-            "sort_order": 5,
+            "sort_order": 8,
         },
         {
             "slug": "advanced-patterns",
             "name": "Advanced Patterns",
             "description": "Advanced techniques for experienced users",
-            "sort_order": 6,
+            "sort_order": 9,
         },
         {
             "slug": "troubleshooting",
             "name": "Troubleshooting",
             "description": "Solving common problems and errors",
-            "sort_order": 7,
+            "sort_order": 10,
         },
         {
             "slug": "best-practices",
             "name": "Best Practices",
             "description": "Recommended approaches and conventions",
-            "sort_order": 8,
+            "sort_order": 11,
         },
     ]
 
@@ -369,7 +387,7 @@ def seed_knowledge_base(conn: sqlite3.Connection, knowledge_dir: Path) -> Dict[s
     print(f"✅ Knowledge base seeding complete!")
 
     return {
-        "categories": 8,
+        "categories": 11,
         "topics": topic_count,
         "issue_links": 21,
     }
