@@ -1,0 +1,1 @@
+"""Critical health check detectors."""

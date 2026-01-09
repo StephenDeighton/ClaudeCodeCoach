@@ -9,6 +9,7 @@ import flet as ft
 from services.version import get_version_string
 from theme import Colors, Spacing, Radius, Typography, get_theme
 from pages.settings import SettingsPage
+from pages.health_scan import HealthScanPage
 
 
 def main(page: ft.Page):
@@ -51,37 +52,12 @@ def main(page: ft.Page):
         update_theme_dependent_colors()
         page.update()
 
+    health_scan_page = HealthScanPage(page)
     settings_page = SettingsPage(page, on_theme_change=on_theme_change)
-
-    # Home page content
-    def build_home_page():
-        dark = is_dark()
-        return ft.Container(
-            content=ft.Column(
-                [
-                    ft.Icon(ft.Icons.MEDICAL_SERVICES, size=64, color=Colors.ACCENT_500),
-                    ft.Text(
-                        "Claude Code Coach",
-                        size=32,
-                        weight=ft.FontWeight.BOLD,
-                        color=Colors.TEXT_LIGHT if dark else Colors.TEXT_DARK,
-                    ),
-                    ft.Text(
-                        "Ready for development",
-                        size=16,
-                        color=Colors.TEXT_LIGHT_MUTED if dark else Colors.TEXT_DARK_MUTED,
-                    ),
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=16,
-            ),
-            expand=True,
-            alignment=ft.alignment.center,
-        )
 
     # Page mapping
     pages = {
-        0: build_home_page,
+        0: health_scan_page,
         1: settings_page,
     }
 
@@ -92,10 +68,7 @@ def main(page: ft.Page):
         """Handle navigation changes"""
         nonlocal selected_index
         selected_index = index
-        if index == 0:
-            content_area.content = build_home_page()
-        elif index == 1:
-            content_area.content = pages[1].build()
+        content_area.content = pages[index].build()
         update_nav_buttons()
         update_theme_dependent_colors()
         page.update()
@@ -158,7 +131,7 @@ def main(page: ft.Page):
     def update_nav_buttons():
         """Update navigation buttons"""
         nav_buttons.controls = [
-            create_nav_button(ft.Icons.HOME_OUTLINED, ft.Icons.HOME_ROUNDED, "Home", 0),
+            create_nav_button(ft.Icons.MEDICAL_SERVICES_OUTLINED, ft.Icons.MEDICAL_SERVICES_ROUNDED, "Health", 0),
             create_nav_button(ft.Icons.SETTINGS_OUTLINED, ft.Icons.SETTINGS_ROUNDED, "Settings", 1),
         ]
 
@@ -208,7 +181,7 @@ def main(page: ft.Page):
 
     # Initialize
     update_nav_buttons()
-    content_area.content = build_home_page()
+    content_area.content = health_scan_page.build()
     update_theme_dependent_colors()
 
     # Main layout

@@ -57,6 +57,13 @@ class Colors:
     CODE_COLOR = "#F59E0B"       # Amber
     FOLDER_COLOR = "#F59E0B"     # Amber
 
+    # Status Colors (for health scores, indicators)
+    GREEN_500 = "#10B981"        # Success/Healthy
+    YELLOW_500 = "#F59E0B"       # Warning/Caution
+    ORANGE_500 = "#F97316"       # Moderate concern
+    RED_500 = "#EF4444"          # Critical/Error
+    BLUE_500 = "#3B82F6"         # Info
+
 
 # =============================================================================
 # SPACING & SIZING
