@@ -14,10 +14,17 @@ class FixPage:
         self.page = page
         self.selected_severity = "All"  # Filter state
         self.sort_by = "severity"  # Sort state: "severity", "title"
+        self.selected_issues = {}  # Dict[issue_id, bool] - track selected issues
 
         # UI components that need updating
         self.issues_container = ft.Container()
         self.stats_text = ft.Text()
+        self.export_button = ft.ElevatedButton(
+            "Export Selected (0)",
+            icon=ft.Icons.CONTENT_COPY_ROUNDED,
+            on_click=self._on_export_selected,
+            disabled=True,
+        )
 
     def _filter_and_sort_issues(self):
         """Filter and sort issues based on current selection."""
@@ -56,6 +63,81 @@ class FixPage:
         self.page.set_clipboard(text)
         self.page.snack_bar = ft.SnackBar(
             content=ft.Text(f"Copied fix prompt for: {issue_title}"),
+            bgcolor=Colors.GREEN_500,
+        )
+        self.page.snack_bar.open = True
+        self.page.update()
+
+    def _on_issue_selected(self, e, issue):
+        """Handle issue selection checkbox change."""
+        issue_id = issue.rule_id
+        self.selected_issues[issue_id] = e.control.value
+
+        # Update export button
+        selected_count = sum(1 for selected in self.selected_issues.values() if selected)
+        self.export_button.text = f"Export Selected ({selected_count})"
+        self.export_button.disabled = selected_count == 0
+        self.page.update()
+
+    def _on_export_selected(self, e):
+        """Export all selected fix prompts to clipboard."""
+        scan_result = get_last_scan()
+        if not scan_result:
+            return
+
+        # Get selected issues
+        selected = [
+            issue for issue in scan_result.issues
+            if self.selected_issues.get(issue.rule_id, False)
+        ]
+
+        if not selected:
+            return
+
+        # Build combined export text
+        lines = []
+        lines.append("=" * 80)
+        lines.append("CLAUDE CODE FIX PROMPTS - BATCH EXPORT")
+        lines.append("=" * 80)
+        lines.append(f"\nProject: {scan_result.project_path}")
+        lines.append(f"Exported: {scan_result.scan_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        lines.append(f"Issues: {len(selected)} selected")
+        lines.append("")
+
+        for i, issue in enumerate(selected, 1):
+            severity_emoji = {"CRITICAL": "🔴", "WARNING": "🟡", "INFO": "🔵"}
+            emoji = severity_emoji.get(issue.severity.value.upper(), "⚪")
+
+            lines.append("")
+            lines.append("=" * 80)
+            lines.append(f"{i}. {emoji} [{issue.severity.value.upper()}] {issue.title}")
+            lines.append("=" * 80)
+            lines.append(f"Rule ID: {issue.rule_id}")
+            lines.append("")
+
+            if issue.fix_prompt:
+                lines.append(issue.fix_prompt.strip())
+            else:
+                lines.append(f"Suggestion: {issue.suggestion}")
+
+            lines.append("")
+
+        lines.append("=" * 80)
+        lines.append("END OF BATCH EXPORT")
+        lines.append("=" * 80)
+        lines.append("")
+        lines.append("Instructions:")
+        lines.append("1. Copy this entire text block")
+        lines.append("2. Paste into Claude Code")
+        lines.append("3. Claude will address each issue systematically")
+        lines.append("")
+
+        combined_text = "\n".join(lines)
+
+        # Copy to clipboard
+        self.page.set_clipboard(combined_text)
+        self.page.snack_bar = ft.SnackBar(
+            content=ft.Text(f"Exported {len(selected)} fix prompts to clipboard!"),
             bgcolor=Colors.GREEN_500,
         )
         self.page.snack_bar.open = True
@@ -129,11 +211,18 @@ class FixPage:
         """Build a card for a single issue with fix prompt."""
         has_fix_prompt = issue.fix_prompt is not None and issue.fix_prompt.strip() != ""
 
+        # Create checkbox for this issue
+        checkbox = ft.Checkbox(
+            value=self.selected_issues.get(issue.rule_id, False),
+            on_change=lambda e: self._on_issue_selected(e, issue),
+        )
+
         # Build the card content
         card_controls = [
-            # Header
+            # Header with checkbox
             ft.Row(
                 [
+                    checkbox,
                     ft.Text(emoji, size=24),
                     ft.Column(
                         [
@@ -172,7 +261,7 @@ class FixPage:
                         expand=True,
                     ),
                 ],
-                spacing=Spacing.MD,
+                spacing=Spacing.SM,
             ),
             ft.Container(height=Spacing.SM),
             # Message
@@ -341,6 +430,9 @@ class FixPage:
                                     ],
                                     spacing=Spacing.XS,
                                 ),
+                                ft.Container(width=Spacing.MD),
+                                # Export button
+                                self.export_button,
                                 ft.Container(expand=True),
                                 # Stats
                                 self.stats_text,
