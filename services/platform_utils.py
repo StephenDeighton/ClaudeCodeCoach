@@ -69,14 +69,17 @@ def get_app_data_dir() -> Path:
 def is_packaged_app() -> bool:
     """Detect if running as a packaged Flet app (.app bundle on macOS)"""
     import sys
-    # Check if running from within a macOS .app bundle
+    # Check if frozen (PyInstaller/similar)
+    if getattr(sys, 'frozen', False):
+        return True
+
+    # Check if running from within OUR .app bundle (not Xcode.app or other apps)
     if platform.system() == "Darwin":
-        # Packaged apps have sys.executable inside the .app bundle
-        # e.g., .../ClaudeCodeCoach.app/Contents/MacOS/ClaudeCodeCoach
         exe_path = Path(sys.executable)
-        return exe_path.parts and any(p.endswith('.app') for p in exe_path.parts)
-    # For Windows/Linux, check if frozen
-    return getattr(sys, 'frozen', False)
+        # Only consider it packaged if it's specifically in ClaudeCodeCoach.app
+        return any(p == 'ClaudeCodeCoach.app' for p in exe_path.parts)
+
+    return False
 
 
 def get_default_db_path() -> Path:

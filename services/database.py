@@ -20,11 +20,14 @@ def _get_schema_file_path() -> Path:
 
     # Check if running as packaged app
     is_packaged = False
-    if platform.system() == "Darwin":
+    if getattr(sys, 'frozen', False):
+        is_packaged = True
+    elif platform.system() == "Darwin":
         exe_path = Path(sys.executable)
-        is_packaged = exe_path.parts and any(p.endswith('.app') for p in exe_path.parts)
+        # Only consider it packaged if it's specifically in ClaudeCodeCoach.app
+        is_packaged = any(p == 'ClaudeCodeCoach.app' for p in exe_path.parts)
     else:
-        is_packaged = getattr(sys, 'frozen', False)
+        is_packaged = False
 
     if is_packaged:
         # Packaged app - schema is in bundled assets

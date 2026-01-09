@@ -52,12 +52,17 @@ class ConfigManager:
     def _is_packaged_app(self) -> bool:
         """Detect if running as a packaged Flet app"""
         import platform
-        # Check if running from within a macOS .app bundle
+        # Check if frozen (PyInstaller/similar)
+        if getattr(sys, 'frozen', False):
+            return True
+
+        # Check if running from within OUR .app bundle (not Xcode.app or other apps)
         if platform.system() == "Darwin":
             exe_path = Path(sys.executable)
-            return exe_path.parts and any(p.endswith('.app') for p in exe_path.parts)
-        # For Windows/Linux, check if frozen
-        return getattr(sys, 'frozen', False)
+            # Only consider it packaged if it's specifically in ClaudeCodeCoach.app
+            return any(p == 'ClaudeCodeCoach.app' for p in exe_path.parts)
+
+        return False
 
     def _ensure_config_exists(self):
         """Create config directory and default config if not exists"""
