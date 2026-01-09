@@ -58,21 +58,30 @@ class KnowledgePage:
 
         chips = []
 
-        # "All" chip
+        # "All" chip (use ElevatedButton as FilterChip not available in 0.28.3)
         chips.append(
-            ft.FilterChip(
-                label=ft.Text("All Topics"),
-                selected=self.selected_category is None,
+            ft.ElevatedButton(
+                text="All Topics",
+                icon=ft.Icons.GRID_VIEW_ROUNDED if self.selected_category is None else None,
+                style=ft.ButtonStyle(
+                    bgcolor=Colors.PRIMARY if self.selected_category is None else None,
+                    color=ft.Colors.WHITE if self.selected_category is None else None,
+                ),
                 on_click=lambda e: self._on_category_select(None),
             )
         )
 
         # Category chips
         for cat in categories:
+            is_selected = self.selected_category == cat.slug
             chips.append(
-                ft.FilterChip(
-                    label=ft.Text(f"{cat.name} ({cat.topic_count})"),
-                    selected=self.selected_category == cat.slug,
+                ft.ElevatedButton(
+                    text=f"{cat.name} ({cat.topic_count})",
+                    icon=ft.Icons.CHECK_ROUNDED if is_selected else None,
+                    style=ft.ButtonStyle(
+                        bgcolor=Colors.PRIMARY if is_selected else None,
+                        color=ft.Colors.WHITE if is_selected else None,
+                    ),
                     on_click=lambda e, slug=cat.slug: self._on_category_select(slug),
                 )
             )
