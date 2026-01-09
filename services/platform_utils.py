@@ -84,6 +84,15 @@ def get_default_db_path() -> Path:
     try:
         config = get_config_manager()
         db_path = config.get_current_db_path()
+
+        # If no profile configured yet, use fallback
+        if db_path is None:
+            print("⚠️ No profile configured, using default database location")
+            if is_packaged_app():
+                return get_app_data_dir() / "coach.db"
+            else:
+                return Path(__file__).parent.parent / "coach.db"
+
         return Path(db_path)
     except Exception as e:
         # Fallback to app data directory if config manager fails

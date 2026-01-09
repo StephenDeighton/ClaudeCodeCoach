@@ -66,17 +66,29 @@ class ConfigManager:
 
         # Create default config if doesn't exist
         if not self.config_file.exists():
-            # Start with empty profiles - let welcome screen guide user
+            # Create default production profile automatically
+            default_db_path = str(self.project_root / "coach.db")
+
             default_config = {
                 "version": "1.0",
-                "current_profile": None,  # No profile until user creates one
-                "profiles": {},
+                "current_profile": "production",  # Auto-select production profile
+                "profiles": {
+                    "production": {
+                        "name": "Production Database",
+                        "db_path": default_db_path,
+                        "description": "Main database with all knowledge topics",
+                        "created": datetime.now().isoformat(),
+                        "last_used": datetime.now().isoformat(),
+                        "read_only": False
+                    }
+                },
                 "app_settings": {
                     "check_for_updates": True,
                     "debug_mode": False
                 }
             }
             self._save_config(default_config)
+            print(f"✅ Created default production profile: {default_db_path}")
 
     def _load_config(self) -> dict:
         """Load configuration from file"""
