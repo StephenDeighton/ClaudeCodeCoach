@@ -45,6 +45,14 @@ coach.db*
 # Test data
 test_data/
 
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.cover
+coverage.xml
+
 # User config
 .coach/
 
