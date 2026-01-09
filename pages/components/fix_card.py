@@ -15,6 +15,8 @@ def build_fix_card(
     selected_issues: dict,
     on_issue_selected,
     on_copy_to_clipboard,
+    on_learn_more=None,
+    has_knowledge_topics: bool = False,
 ) -> ft.Container:
     """
     Build a card for a single issue with fix prompt.
@@ -27,6 +29,8 @@ def build_fix_card(
         selected_issues: Dict of selected issue IDs
         on_issue_selected: Callback for checkbox change (e, issue)
         on_copy_to_clipboard: Callback for copy button (prompt, title)
+        on_learn_more: Optional callback for Learn More button (issue)
+        has_knowledge_topics: Whether this issue has related knowledge topics
 
     Returns:
         Container with the fix card UI
@@ -159,6 +163,24 @@ def build_fix_card(
                 bgcolor=ft.Colors.with_opacity(0.03, color),
                 border_radius=Radius.MD,
                 border=ft.border.all(1, ft.Colors.with_opacity(0.2, color)),
+            ),
+        ])
+
+    # Add Learn More button if knowledge topics available
+    if has_knowledge_topics and on_learn_more:
+        card_controls.extend([
+            ft.Container(height=Spacing.SM),
+            ft.Container(
+                content=ft.ElevatedButton(
+                    "Learn More",
+                    icon=ft.Icons.MENU_BOOK_ROUNDED,
+                    on_click=lambda e: on_learn_more(issue),
+                    style=ft.ButtonStyle(
+                        color=Colors.ACCENT_500,
+                        bgcolor=ft.Colors.with_opacity(0.1, Colors.ACCENT_500),
+                    ),
+                ),
+                alignment=ft.alignment.center_right,
             ),
         ])
 

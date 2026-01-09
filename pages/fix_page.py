@@ -9,14 +9,18 @@ from services.app_state import get_last_scan
 from health_checks.base import Severity
 from pages.components.fix_card import build_fix_card
 from pages.components.filter_controls import build_filter_controls
+from services.knowledge_service import get_knowledge_service
 
 
 class FixPage:
-    def __init__(self, page: ft.Page):
+    def __init__(self, page: ft.Page, on_navigate=None):
         self.page = page
+        self.on_navigate = on_navigate  # Callback to navigate to other pages
         self.selected_severity = "All"  # Filter state
         self.sort_by = "severity"  # Sort state: "severity", "title"
         self.selected_issues = {}  # Dict[issue_id, bool] - track selected issues
+        self.knowledge_service = get_knowledge_service()
+        self.issue_topics_cache = {}  # Cache of issue_rule_id -> has_topics
 
         # UI components that need updating
         self.issues_container = ft.Container()
@@ -209,8 +213,29 @@ class FixPage:
 
         self.page.update()
 
+    def _check_has_knowledge_topics(self, issue_rule_id: str) -> bool:
+        """Check if an issue has related knowledge topics."""
+        if issue_rule_id not in self.issue_topics_cache:
+            topics = self.knowledge_service.get_topics_for_issue(issue_rule_id)
+            self.issue_topics_cache[issue_rule_id] = len(topics) > 0
+        return self.issue_topics_cache[issue_rule_id]
+
+    def _on_learn_more(self, issue):
+        """Handle Learn More button click - navigate to Knowledge tab with first related topic."""
+        if not self.on_navigate:
+            return
+
+        # Get topics for this issue
+        topics = self.knowledge_service.get_topics_for_issue(issue.rule_id)
+
+        if topics:
+            # Navigate to Knowledge tab (index 2) with first topic slug
+            self.on_navigate(2, topics[0].slug)
+
     def _build_fix_card(self, issue, emoji: str, color: str, is_dark: bool):
         """Build a card for a single issue with fix prompt."""
+        has_topics = self._check_has_knowledge_topics(issue.rule_id)
+
         return build_fix_card(
             issue=issue,
             emoji=emoji,
@@ -219,6 +244,8 @@ class FixPage:
             selected_issues=self.selected_issues,
             on_issue_selected=self._on_issue_selected,
             on_copy_to_clipboard=self._copy_to_clipboard,
+            on_learn_more=self._on_learn_more if self.on_navigate else None,
+            has_knowledge_topics=has_topics,
         )
 
     def build(self) -> ft.Control:

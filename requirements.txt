@@ -1,5 +1,6 @@
 flet==0.28.3
 jsonschema>=4.17.0
+PyYAML>=6.0.0
 
 # Testing
 pytest>=8.0.0

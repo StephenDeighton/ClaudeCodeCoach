@@ -69,9 +69,9 @@ def initialize_database_schema() -> bool:
     conn = sqlite3.connect(str(db_path), timeout=30.0)
 
     try:
-        # Check if schema already exists by looking for content table
+        # Check if schema already exists by looking for topics table
         cursor = conn.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='content'")
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='topics'")
         if cursor.fetchone():
             print("✓ Database schema already exists")
             return False
