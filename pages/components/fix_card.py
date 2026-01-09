@@ -176,8 +176,8 @@ def build_fix_card(
                     icon=ft.Icons.MENU_BOOK_ROUNDED,
                     on_click=lambda e: on_learn_more(issue),
                     style=ft.ButtonStyle(
-                        color=Colors.ACCENT_500,
-                        bgcolor=ft.Colors.with_opacity(0.1, Colors.ACCENT_500),
+                        color=ft.Colors.WHITE if not is_dark else Colors.ACCENT_500,
+                        bgcolor=Colors.ACCENT_500 if not is_dark else ft.Colors.with_opacity(0.15, Colors.ACCENT_500),
                     ),
                 ),
                 alignment=ft.alignment.center_right,

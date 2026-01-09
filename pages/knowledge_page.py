@@ -514,7 +514,7 @@ class KnowledgePage:
             content=self.results_list,
             width=350,
             padding=Spacing.MD,
-            bgcolor=ft.Colors.with_opacity(0.02, Colors.PRIMARY_900 if not is_dark else Colors.PRIMARY_100),
+            bgcolor=ft.Colors.with_opacity(0.02, Colors.LIGHT_BORDER if not is_dark else Colors.PRIMARY_700),
         )
 
         # Main layout
