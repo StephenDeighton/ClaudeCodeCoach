@@ -400,6 +400,9 @@ class SetupWizardPage:
                 folder_path = result.stdout.strip()
                 self.selected_path = Path(folder_path)
                 self.path_display.value = str(self.selected_path)
+
+                # Rebuild the UI to enable the Analyze button
+                self.content_container.content = self._build_step_selection()
                 self.page.update()
         except Exception as ex:
             print(f"Error picking directory: {ex}")
