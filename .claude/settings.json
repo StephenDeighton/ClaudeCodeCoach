@@ -28,8 +28,7 @@
   "hooks": {
     "SessionStart:startup": {
       "command": "echo \"✓ C3 session started - Run tests with: python3 -m pytest tests/\"",
-      "blocking": false,
-      "outputMode": "explanatory"
+      "blocking": false
     }
   }
 }

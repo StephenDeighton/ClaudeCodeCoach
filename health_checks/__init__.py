@@ -36,6 +36,7 @@ from .warning.model_not_set import ModelNotSetDetector
 from .warning.thinking_not_enabled import ThinkingNotEnabledDetector
 from .warning.no_agents_dir import NoAgentsDirDetector
 from .warning.no_hooks import NoHooksDetector
+from .warning.invalid_hook_keys import InvalidHookKeysDetector
 from .warning.large_files import LargeFilesDetector
 from .warning.no_tests_dir import NoTestsDirDetector
 from .warning.no_readme import NoReadmeDetector
@@ -67,6 +68,7 @@ __all__ = [
     "ThinkingNotEnabledDetector",
     "NoAgentsDirDetector",
     "NoHooksDetector",
+    "InvalidHookKeysDetector",
     "LargeFilesDetector",
     "NoTestsDirDetector",
     "NoReadmeDetector",
