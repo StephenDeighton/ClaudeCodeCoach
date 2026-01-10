@@ -26,9 +26,17 @@
     "MAX_THINKING_TOKENS": "10000"
   },
   "hooks": {
-    "SessionStart": {
-      "command": "echo \"✓ C3 session started - Run tests with: python3 -m pytest tests/\"",
-      "blocking": false
-    }
+    "SessionStart": [
+      {
+        "matcher": {},
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"✓ C3 session started - Run tests with: python3 -m pytest tests/\"",
+            "blocking": false
+          }
+        ]
+      }
+    ]
   }
 }

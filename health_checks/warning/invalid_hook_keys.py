@@ -47,11 +47,19 @@ Example of a valid hook:
 ```json
 {
   "hooks": {
-    "SessionStart:startup": {
-      "command": "echo \\"✓ Session started\\"",
-      "blocking": false,
-      "successMessage": "Ready to code!"
-    }
+    "SessionStart": [
+      {
+        "matcher": {},
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \\"✓ Session started\\"",
+            "blocking": false,
+            "successMessage": "Ready to code!"
+          }
+        ]
+      }
+    ]
   }
 }
 ```

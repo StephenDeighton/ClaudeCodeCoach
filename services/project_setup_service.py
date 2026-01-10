@@ -301,10 +301,18 @@ Describe your folder organization here
                 "MAX_THINKING_TOKENS": "10000"
             },
             "hooks": {
-                "SessionStart:startup": {
-                    "command": "echo \"✓ Session started - Ready to code!\"",
-                    "blocking": False
-                }
+                "SessionStart": [
+                    {
+                        "matcher": {},
+                        "hooks": [
+                            {
+                                "type": "command",
+                                "command": "echo \"✓ Session started - Ready to code!\"",
+                                "blocking": False
+                            }
+                        ]
+                    }
+                ]
             }
         }
 

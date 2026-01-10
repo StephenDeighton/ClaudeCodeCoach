@@ -28,10 +28,18 @@ Please set up useful hooks in .claude/settings.json:
    ```json
    {
      "hooks": {
-       "SessionStart:startup": {
-         "command": "echo \"✓ Session started\"",
-         "blocking": false
-       }
+       "SessionStart": [
+         {
+           "matcher": {},
+           "hooks": [
+             {
+               "type": "command",
+               "command": "echo \"✓ Session started\"",
+               "blocking": false
+             }
+           ]
+         }
+       ]
      }
    }
    ```
