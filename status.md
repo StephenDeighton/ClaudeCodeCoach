@@ -423,6 +423,8 @@ Built complete Claude Code setup wizard that converts code folders into CC proje
 - `20a619b` - fix: Correct Colors.BORDER_LIGHT to Colors.LIGHT_BORDER in setup wizard
 - `d54c17a` - docs: Update status.md with complete wizard bug fixes
 - `ba55e9f` - fix: Auto-analyze folder from health scan and make Analyze button work
+- `33109ef` - docs: Complete wizard UX bug fix documentation
+- `e5a5976` - fix: Rebuild UI after directory selection to enable Analyze button
 
 **Bug Fixes:**
 1. Typography constants error (app startup crash)
@@ -439,6 +441,12 @@ Built complete Claude Code setup wizard that converts code folders into CC proje
    - Fixed: Analyze button now updates UI (was doing nothing)
    - Root cause: _change_step() didn't rebuild content_container.content
    - User flow improved: Health scan → Wizard shows results immediately
+
+4. Directory picker button doesn't enable Analyze button
+   - Fixed: Rebuild UI after folder selection
+   - Root cause: Button's disabled property evaluated once at build time
+   - Same Flet pattern issue as #3 - must rebuild content, not just page.update()
+   - Commit: `e5a5976`
 
 **Testing Documentation:**
 - Created `.claude/skills/testing.md` with mandatory pre-commit checklist
