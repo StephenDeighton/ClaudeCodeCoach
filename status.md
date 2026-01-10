@@ -459,6 +459,37 @@ Built complete Claude Code setup wizard that converts code folders into CC proje
 - Analyze button now shows results immediately
 - Smoother user experience with fewer clicks
 
+## 2026-01-10
+
+### Infrastructure Improvements - Eating Our Own Dogfood
+
+**Startup Script (`start.sh`)**
+- Created proper startup script with environment validation
+- Cleans Python cache (`__pycache__`, `.pyc` files)
+- Verifies Python 3.12+ is installed
+- Checks all dependencies are present
+- Provides clean, reproducible app launches
+
+**Documentation (`KNOWN_ISSUES.md`)**
+- Created comprehensive known issues documentation
+- Documents Flet FilePicker bug on macOS (why we use AppleScript)
+- Documents shell quoting patterns in hooks
+- Documents Flet UI update patterns (rebuild container.content)
+- Documents theme constants gotchas
+- Prevents regression of fixed bugs
+
+**Updates:**
+- README.md now recommends `./start.sh` as primary launch method
+- CLAUDE.md updated to use `./start.sh` in testing checklist
+- C3 now follows its own best practices for clean startup
+
+**Commits:**
+- `9b3ae88` - docs: Add KNOWN_ISSUES.md to prevent regression
+- `925ceaf` - feat: Add start.sh script for clean app startup
+
+**Philosophy:**
+We're building a tool to help people use Claude Code properly - we should use our own tool and follow our own advice. The startup script ensures clean environment and proper initialization, which C3 itself would recommend to users.
+
 ## Next Steps
 - Refactor large files (health_scan.py, theme.py) to meet 400-line guideline
 - Create planning documents (PRD.md)
