@@ -418,12 +418,24 @@ Built complete Claude Code setup wizard that converts code folders into CC proje
 
 **Commits:**
 - `fc1abc1` - feat: Add CC Setup Wizard - complete onboarding system
-- `bd33f26` - fix: Correct Typography.BODY to Typography.BODY_MD in setup wizard
+- `46b2d6d` - fix: Correct Typography.BODY to Typography.BODY_MD in setup wizard
+- `134d8ca` - docs: Add mandatory testing checklist and philosophy
+- `20a619b` - fix: Correct Colors.BORDER_LIGHT to Colors.LIGHT_BORDER in setup wizard
 
-**Bug Fix:**
-- Fixed AttributeError on app startup
-- Typography class has BODY_MD/BODY_SM/BODY_LG, not BODY
-- Tested all page imports successfully
+**Bug Fixes:**
+1. Typography constants error (app startup crash)
+   - Fixed: Typography.BODY → Typography.BODY_MD
+   - Root cause: Typography class has BODY_MD/SM/LG, not BODY
+
+2. Colors constants error (wizard tab navigation crash)
+   - Fixed: Colors.BORDER_LIGHT → Colors.LIGHT_BORDER
+   - Fixed: Colors.BORDER_DARK → Colors.PRIMARY_700
+   - Root cause: Colors class naming pattern is LIGHT_BORDER not BORDER_LIGHT
+
+**Testing Documentation:**
+- Created `.claude/skills/testing.md` with mandatory pre-commit checklist
+- Updated CLAUDE.md to prominently feature testing requirements
+- Documented Typography and Colors gotchas with examples
 
 ## Next Steps
 - Refactor large files (health_scan.py, theme.py) to meet 400-line guideline
