@@ -24,6 +24,7 @@ class ScanResult:
 class AppState:
     """Global application state."""
     last_scan: Optional[ScanResult] = None
+    wizard_path: Optional[Path] = None  # Path for wizard to process
 
 
 # Global singleton instance
@@ -58,3 +59,28 @@ def get_last_scan() -> Optional[ScanResult]:
 def clear_last_scan():
     """Clear the last scan result."""
     _state.last_scan = None
+
+
+def set_wizard_path(path: Path):
+    """
+    Store path for wizard to process.
+
+    Args:
+        path: Path to project directory
+    """
+    _state.wizard_path = path
+
+
+def get_wizard_path() -> Optional[Path]:
+    """
+    Get path stored for wizard.
+
+    Returns:
+        Path if set, None otherwise
+    """
+    return _state.wizard_path
+
+
+def clear_wizard_path():
+    """Clear wizard path after processing."""
+    _state.wizard_path = None

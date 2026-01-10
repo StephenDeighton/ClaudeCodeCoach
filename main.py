@@ -13,6 +13,7 @@ from pages.settings import SettingsPage
 from pages.health_scan import HealthScanPage
 from pages.fix_page import FixPage
 from pages.knowledge_page import KnowledgePage
+from pages.setup_wizard import SetupWizardPage
 from services.database import initialize_database_schema, get_db
 from services.knowledge_seeder import seed_knowledge_base
 
@@ -86,10 +87,6 @@ def main(page: ft.Page):
         update_theme_dependent_colors()
         page.update()
 
-    health_scan_page = HealthScanPage(page)
-    knowledge_page = KnowledgePage(page)
-    settings_page = SettingsPage(page, on_theme_change=on_theme_change)
-
     # Create navigate callback for cross-page navigation
     def on_navigate_with_params(index: int, topic_slug: str = None):
         """Navigate to page with optional parameters."""
@@ -98,8 +95,12 @@ def main(page: ft.Page):
         if index == 2 and topic_slug:
             knowledge_page.select_topic_by_slug(topic_slug)
 
-    # Create fix_page with navigation callback
+    # Create pages with navigation callbacks where needed
+    health_scan_page = HealthScanPage(page, on_navigate=on_navigate_with_params)
     fix_page = FixPage(page, on_navigate=on_navigate_with_params)
+    knowledge_page = KnowledgePage(page)
+    settings_page = SettingsPage(page, on_theme_change=on_theme_change)
+    setup_wizard_page = SetupWizardPage(page, on_navigate=on_navigate_with_params)
 
     # Page mapping
     pages = {
@@ -107,6 +108,7 @@ def main(page: ft.Page):
         1: fix_page,
         2: knowledge_page,
         3: settings_page,
+        4: setup_wizard_page,
     }
 
     # Navigation state
@@ -183,6 +185,7 @@ def main(page: ft.Page):
             create_nav_button(ft.Icons.BUILD_CIRCLE_OUTLINED, ft.Icons.BUILD_CIRCLE_ROUNDED, "Fix", 1),
             create_nav_button(ft.Icons.MENU_BOOK_OUTLINED, ft.Icons.MENU_BOOK_ROUNDED, "Knowledge", 2),
             create_nav_button(ft.Icons.SETTINGS_OUTLINED, ft.Icons.SETTINGS_ROUNDED, "Settings", 3),
+            create_nav_button(ft.Icons.ROCKET_LAUNCH_OUTLINED, ft.Icons.ROCKET_LAUNCH_ROUNDED, "Wizard", 4),
         ]
 
     # Header

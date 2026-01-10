@@ -9,7 +9,9 @@ from pathlib import Path
 from theme import Colors, Spacing, Radius, Typography, section_header, divider
 from services.project_scanner import get_project_scanner
 from services.health_checker import get_health_checker
-from services.app_state import set_last_scan, ScanResult
+from services.app_state import set_last_scan, set_wizard_path, ScanResult
+from services.tech_stack_analyzer import get_tech_stack_analyzer
+from services.status_updater import get_status_updater
 from health_checks.base import Severity
 from utils.platform_specific import pick_folder, save_file_dialog
 from utils.report_formatter import format_health_report
@@ -18,8 +20,9 @@ from pages.components.scan_results import build_scan_results, build_not_claude_p
 
 
 class HealthScanPage:
-    def __init__(self, page: ft.Page):
+    def __init__(self, page: ft.Page, on_navigate=None):
         self.page = page
+        self.on_navigate = on_navigate
         self.selected_path = None
         self.health_report = None
 
@@ -88,8 +91,17 @@ class HealthScanPage:
         project_info = scanner.scan_directory(self.selected_path)
 
         if not project_info:
-            # Not a Claude Code project
-            self.results_container.content = self._build_not_claude_project()
+            # No .claude/ found - check if it's a valid code project
+            analyzer = get_tech_stack_analyzer()
+            tech_info = analyzer.analyze_directory(self.selected_path)
+            is_valid, reason = analyzer.is_valid_code_project(tech_info)
+
+            if is_valid:
+                # Valid code project without .claude - offer to set up CC
+                self.results_container.content = self._build_setup_prompt()
+            else:
+                # Not a code project at all
+                self.results_container.content = self._build_not_claude_project()
         else:
             # Run health checks
             checker = get_health_checker()
@@ -107,6 +119,14 @@ class HealthScanPage:
                 detectors_run=self.health_report.detectors_run
             )
             set_last_scan(scan_result)
+
+            # Update status.md with scan results
+            updater = get_status_updater()
+            updater.append_scan_result(
+                project_info.path,
+                self.health_report.score,
+                len(self.health_report.issues)
+            )
 
             self.results_container.content = self._build_results()
 
@@ -184,6 +204,60 @@ class HealthScanPage:
             )
             self.page.snack_bar.open = True
             self.page.update()
+
+    def _build_setup_prompt(self) -> ft.Container:
+        """Build UI prompting user to run setup wizard"""
+        is_dark = self.page.theme_mode == ft.ThemeMode.DARK
+
+        return ft.Container(
+            content=ft.Column([
+                ft.Icon(ft.Icons.FOLDER_ROUNDED, size=64, color=Colors.ACCENT_500),
+                ft.Text(
+                    "Code Project Detected",
+                    size=Typography.H2,
+                    weight=ft.FontWeight.BOLD,
+                ),
+                ft.Text(
+                    "This folder contains code but no Claude Code configuration.",
+                    size=Typography.BODY_MD,
+                    text_align=ft.TextAlign.CENTER,
+                ),
+                ft.Text(
+                    "Would you like to set up Claude Code for this project?",
+                    size=Typography.BODY_MD,
+                    text_align=ft.TextAlign.CENTER,
+                ),
+                ft.Container(height=Spacing.MD),
+                ft.Row([
+                    ft.ElevatedButton(
+                        "No, Cancel",
+                        on_click=lambda e: self._clear_results()
+                    ),
+                    ft.ElevatedButton(
+                        "Yes, Set Up Claude Code",
+                        icon=ft.Icons.ROCKET_LAUNCH_ROUNDED,
+                        on_click=lambda e: self._navigate_to_wizard(),
+                        bgcolor=Colors.ACCENT_500,
+                    ),
+                ], alignment=ft.MainAxisAlignment.CENTER, spacing=Spacing.MD),
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=Spacing.MD),
+            padding=Spacing.XL,
+            alignment=ft.alignment.center,
+        )
+
+    def _navigate_to_wizard(self):
+        """Navigate to wizard tab and pass selected path"""
+        # Store path in app_state for wizard to pick up
+        set_wizard_path(self.selected_path)
+
+        # Navigate to wizard tab (index 4)
+        if self.on_navigate:
+            self.on_navigate(4)
+
+    def _clear_results(self):
+        """Clear scan results"""
+        self.results_container.content = None
+        self.page.update()
 
     def build(self) -> ft.Control:
         """Build health scan page"""

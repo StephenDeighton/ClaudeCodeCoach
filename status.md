@@ -312,7 +312,112 @@ Fixed all issues from batch export:
 - `health_checks/warning/no_hooks.py` - Fixed template that was teaching users the wrong pattern
 
 **Commits:**
-- Ready to commit: fix: Correct shell quoting in hooks detector and settings
+- `49c79e1` - fix: Correct shell quoting in hooks detector and settings
+
+### CC Setup Wizard - Complete Onboarding System ✓
+
+**Major Feature: Transform C3 from Diagnostic to Onboarding Tool**
+
+Built complete Claude Code setup wizard that converts code folders into CC projects:
+
+**Core Services:**
+1. `services/tech_stack_analyzer.py` - Tech stack detection engine
+   - Detects Python (requirements.txt, pyproject.toml, *.py files)
+   - Detects JavaScript/Node (package.json, *.js/*.ts files)
+   - Detects Go (go.mod, *.go files)
+   - Detects Rust (Cargo.toml, *.rs files)
+   - Validates folders as code projects (git, package managers, file count)
+   - Returns TechStackInfo with languages, package managers, confidence
+   - Excludes: node_modules, venv, .git, dist, build, __pycache__
+
+2. `services/project_setup_service.py` - Configuration generator
+   - Creates .claude/settings.json (model: sonnet-4.5, thinking: 10000, hooks)
+   - Generates tech-specific CLAUDE.md templates (<50 lines)
+   - Updates/creates .gitignore with essential patterns
+   - Creates status.md template
+   - Creates .env.example from .env if exists
+   - Checks for existing setup with overwrite protection
+   - Predicts health score: 55-75/100 after setup
+
+3. `services/status_updater.py` - Auto-documentation
+   - Appends scan results to status.md with date and score
+   - Appends wizard completion events
+   - Creates status.md if missing
+
+**Wizard UI:**
+4. `pages/setup_wizard.py` - Multi-step wizard interface
+   - Step 0: Folder selection (macOS native picker)
+   - Step 1: Analysis results (shows detected tech, validation)
+   - Step 2: Confirmation (warns about overwriting existing setup)
+   - Step 3: Progress (shows file creation)
+   - Step 4: Completion (success message, navigate to Scan)
+   - Rejection UI for invalid folders (no code detected)
+
+**Integration:**
+5. Modified `services/app_state.py` - Added wizard_path state
+   - set_wizard_path(), get_wizard_path(), clear_wizard_path()
+
+6. Modified `pages/health_scan.py` - Smart detection
+   - Detects missing .claude/ folder
+   - Validates if folder is code project using tech_stack_analyzer
+   - Shows "Set Up Claude Code" prompt for valid code projects
+   - Shows rejection for non-code folders
+   - Auto-updates status.md after every scan
+   - Navigates to wizard tab when user accepts
+
+7. Modified `main.py` - Navigation wiring
+   - Imported SetupWizardPage
+   - Created setup_wizard_page instance with navigation callback
+   - Added to pages dictionary (index 4)
+   - Added "Wizard" nav button with rocket icon
+   - Passed on_navigate to health_scan_page
+
+**Templates:**
+- Python template: PEP 8, pytest, type hints
+- JavaScript template: ESLint, Prettier, npm/yarn/pnpm
+- Go template: go fmt, go test, go modules
+- Rust template: cargo fmt, clippy, cargo test
+- Generic template: fallback for other languages
+
+**Score Calculation:**
+- settings.json: +30 points (model_not_set, thinking_not_enabled, no_hooks)
+- .gitignore (new): +40 points (no_gitignore, secrets_exposed)
+- .gitignore (update): +20 points (secrets_exposed only)
+- status.md: +10 points (no_status_md)
+- .env.example: +5 points (missing_env_example)
+- **Total: 55-85/100** (Fair to Good range)
+
+**Testing:**
+- ✅ All imports successful (no syntax errors)
+- ✅ Tech stack analyzer detects C3 as Python project (68 files, high confidence)
+- ✅ Template selection works correctly
+- ✅ Score calculations validated
+- ✅ Services use singleton pattern correctly
+- ✅ Integration points wired correctly
+
+**User Flow:**
+1. User scans folder without .claude/ → C3 detects code project
+2. Shows "Code Project Detected" prompt
+3. User clicks "Yes, Set Up Claude Code"
+4. Navigates to Wizard tab (always visible in nav)
+5. Wizard analyzes tech stack → shows results
+6. User confirms setup → files generated
+7. Auto-navigates back to Scan tab → shows ≥50 score
+8. status.md updated with setup event and scan result
+
+**Key Features:**
+- KISS design - simple auto-generation, no complex configuration
+- Overwrite protection - warns before replacing existing files
+- Comprehensive feedback - shows all detected tech
+- Validation - rejects non-code folders with clear messaging
+- Status tracking - auto-documents all operations
+- Tech-aware - generates appropriate templates per language
+
+**Files Created:** 3 new services, 1 new page, 3 modified files
+**Lines of Code:** ~1500+ lines total
+
+**Commits:**
+- Ready to commit: feat: Add CC Setup Wizard - complete onboarding system
 
 ## Next Steps
 - Refactor large files (health_scan.py, theme.py) to meet 400-line guideline
