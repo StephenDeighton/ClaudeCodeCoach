@@ -226,7 +226,22 @@ Describe your folder organization here
                 env_example_path = self._create_env_example(path)
                 if env_example_path:
                     result.files_created.append(env_example_path)
-                    result.expected_score += 5  # Fixes missing_env_example
+
+            # Create essential directories that health checks expect
+            skills_dir = claude_dir / "skills"
+            skills_dir.mkdir(exist_ok=True)
+            result.files_created.append(skills_dir)
+
+            commands_dir = claude_dir / "commands"
+            commands_dir.mkdir(exist_ok=True)
+            result.files_created.append(commands_dir)
+
+            # Create README.md if it doesn't exist
+            readme_path = path / "README.md"
+            if not readme_path.exists():
+                readme_content = self._create_readme(path, tech_info)
+                readme_path.write_text(readme_content)
+                result.files_created.append(readme_path)
 
             result.success = True
             return result
@@ -479,6 +494,80 @@ Describe your folder organization here
         except Exception:
             # If we can't read .env, skip creating example
             return None
+
+    def _create_readme(self, path: Path, tech_info: TechStackInfo) -> str:
+        """Create README.md template based on tech stack"""
+        project_name = path.name
+
+        # Determine primary language for instructions
+        lang = tech_info.primary_language or "your language"
+
+        # Build tech stack list
+        tech_list = []
+        if tech_info.languages:
+            tech_list.extend(f"- {l.title()}" for l in tech_info.languages)
+        if tech_info.package_managers:
+            tech_list.extend(f"- {pm}" for pm in tech_info.package_managers)
+
+        tech_stack_section = "\n".join(tech_list) if tech_list else "- Add your tech stack here"
+
+        content = f"""# {project_name}
+
+## Overview
+
+Add a brief description of your project here.
+
+## Tech Stack
+
+{tech_stack_section}
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.12+ / Node.js 18+ / etc. (update based on your stack)
+- Required dependencies (see installation)
+
+### Installation
+
+```bash
+# Add your installation commands
+# e.g., npm install, pip install -r requirements.txt, etc.
+```
+
+### Running
+
+```bash
+# Add your run commands
+# e.g., npm start, python main.py, cargo run, etc.
+```
+
+## Development
+
+- Follow the patterns in `.claude/CLAUDE.md`
+- Update `status.md` after each session
+- Run tests before committing
+
+## Testing
+
+```bash
+# Add your test commands
+# e.g., npm test, pytest, cargo test, etc.
+```
+
+## Contributing
+
+1. Follow existing code patterns
+2. Write tests for new features
+3. Update documentation
+4. Use conventional commit messages
+
+## License
+
+[Add your license here]
+"""
+
+        return content
 
 
 # Singleton instance
