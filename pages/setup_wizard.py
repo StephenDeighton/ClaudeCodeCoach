@@ -115,7 +115,7 @@ class SetupWizardPage:
                     self.path_display,
                 ]),
                 padding=Spacing.MD,
-                border=ft.border.all(1, Colors.BORDER_LIGHT if not is_dark else Colors.BORDER_DARK),
+                border=ft.border.all(1, Colors.LIGHT_BORDER if not is_dark else Colors.PRIMARY_700),
                 border_radius=Spacing.SM,
             ),
 

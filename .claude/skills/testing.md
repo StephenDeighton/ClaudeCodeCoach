@@ -77,6 +77,26 @@ Typography class attributes:
 - `BODY_LG`, `BODY_MD`, `BODY_SM` (15, 14, 13)
 - `CAPTION`, `TINY` (12, 11)
 
+### Colors Constants
+❌ **WRONG**: `Colors.BORDER_LIGHT`, `Colors.BORDER_DARK`
+✅ **CORRECT**: `Colors.LIGHT_BORDER`, `Colors.PRIMARY_700`
+
+For borders in light/dark mode:
+```python
+# CORRECT
+border=ft.border.all(1, Colors.LIGHT_BORDER if not is_dark else Colors.PRIMARY_700)
+
+# WRONG
+border=ft.border.all(1, Colors.BORDER_LIGHT if not is_dark else Colors.BORDER_DARK)
+```
+
+Common Colors attributes:
+- Light theme: `LIGHT_BG`, `LIGHT_SURFACE`, `LIGHT_BORDER`, `LIGHT_BORDER_STRONG`
+- Dark theme: `PRIMARY_900`, `PRIMARY_800`, `PRIMARY_700`, `PRIMARY_600`
+- Accent: `ACCENT_500`, `ACCENT_400`, `ACCENT_600`
+- Status: `GREEN_500`, `YELLOW_500`, `ORANGE_500`, `RED_500`, `BLUE_500`
+- Text: `TEXT_DARK`, `TEXT_DARK_MUTED`, `TEXT_LIGHT`, `TEXT_LIGHT_MUTED`
+
 ### Flet UI Testing
 Flet apps defer errors until runtime. You won't see AttributeError or NameError until:
 1. Page instance is created (`PageClass(page)`)
