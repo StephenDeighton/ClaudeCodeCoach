@@ -46,6 +46,10 @@ class SetupWizardPage:
             self.path_display.value = str(wizard_path)
             clear_wizard_path()
 
+            # Auto-analyze the passed path
+            self.tech_info = self.tech_analyzer.analyze_directory(self.selected_path)
+            self.current_step = 1  # Move to analysis results
+
     def build(self) -> ft.Control:
         """Build wizard UI"""
         is_dark = self.page.theme_mode == ft.ThemeMode.DARK
@@ -450,6 +454,25 @@ class SetupWizardPage:
     def _change_step(self, step: int):
         """Change to a different step"""
         self.current_step = step
+
+        # Rebuild the UI for the new step
+        is_dark = self.page.theme_mode == ft.ThemeMode.DARK
+
+        if self.current_step == 0:
+            step_content = self._build_step_selection()
+        elif self.current_step == 1:
+            step_content = self._build_step_analysis()
+        elif self.current_step == 2:
+            step_content = self._build_step_confirm()
+        elif self.current_step == 3:
+            step_content = self._build_step_progress()
+        elif self.current_step == 4:
+            step_content = self._build_step_complete()
+        else:
+            step_content = self._build_step_selection()
+
+        # Update the content container
+        self.content_container.content = step_content
         self.page.update()
 
 
