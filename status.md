@@ -421,6 +421,8 @@ Built complete Claude Code setup wizard that converts code folders into CC proje
 - `46b2d6d` - fix: Correct Typography.BODY to Typography.BODY_MD in setup wizard
 - `134d8ca` - docs: Add mandatory testing checklist and philosophy
 - `20a619b` - fix: Correct Colors.BORDER_LIGHT to Colors.LIGHT_BORDER in setup wizard
+- `d54c17a` - docs: Update status.md with complete wizard bug fixes
+- `ba55e9f` - fix: Auto-analyze folder from health scan and make Analyze button work
 
 **Bug Fixes:**
 1. Typography constants error (app startup crash)
@@ -432,10 +434,22 @@ Built complete Claude Code setup wizard that converts code folders into CC proje
    - Fixed: Colors.BORDER_DARK → Colors.PRIMARY_700
    - Root cause: Colors class naming pattern is LIGHT_BORDER not BORDER_LIGHT
 
+3. Wizard UX issues (folder selection and analyze button)
+   - Fixed: Auto-analyze when path passed from health scan
+   - Fixed: Analyze button now updates UI (was doing nothing)
+   - Root cause: _change_step() didn't rebuild content_container.content
+   - User flow improved: Health scan → Wizard shows results immediately
+
 **Testing Documentation:**
 - Created `.claude/skills/testing.md` with mandatory pre-commit checklist
 - Updated CLAUDE.md to prominently feature testing requirements
 - Documented Typography and Colors gotchas with examples
+
+**Wizard Improvements:**
+- Skips folder selection when coming from health scan
+- Auto-analyzes detected code project
+- Analyze button now shows results immediately
+- Smoother user experience with fewer clicks
 
 ## Next Steps
 - Refactor large files (health_scan.py, theme.py) to meet 400-line guideline
