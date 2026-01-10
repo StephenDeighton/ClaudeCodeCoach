@@ -58,8 +58,19 @@ Claude Code Coach helps developers maintain healthy Claude Code projects by:
 
 4. **Run the application**
    ```bash
+   ./start.sh
+   ```
+
+   Or manually:
+   ```bash
    python3 main.py
    ```
+
+   The `start.sh` script ensures a clean start by:
+   - Verifying Python 3.12+ is installed
+   - Cleaning Python cache (`__pycache__`, `.pyc` files)
+   - Checking all dependencies are installed
+   - Launching the app with proper environment
 
 ## Usage
 

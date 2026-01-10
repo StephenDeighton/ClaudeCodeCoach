@@ -22,10 +22,12 @@ A Flet-based Mac app that scans Claude Code project configurations for health is
 
 ## Testing Requirements
 **CRITICAL**: Before ANY commit that modifies pages or services:
-1. Test app launches without errors (`python3 main.py`)
+1. Test app launches without errors (`./start.sh`)
 2. Navigate to each tab to verify no startup errors
 3. Test the feature end-to-end
 4. See `.claude/skills/testing.md` for complete checklist
+
+**Startup Script**: Always use `./start.sh` to launch C3 - it cleans cache and validates environment
 
 ## Git Workflow
 - **TEST FIRST** - Always test app launch before committing
