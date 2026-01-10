@@ -22,6 +22,7 @@ class InvalidHookKeysDetector(BaseDetector):
 
     # Valid keys for hook configurations
     VALID_HOOK_KEYS = {
+        "type",           # Required: hook type (usually "command")
         "command",        # Required: shell command to execute
         "blocking",       # Optional: wait for completion
         "successMessage", # Optional: custom success message
@@ -32,6 +33,7 @@ class InvalidHookKeysDetector(BaseDetector):
     fix_prompt = """My hook configuration contains invalid keys that Claude Code doesn't recognize.
 
 Valid hook keys are:
+- `type` (required) - hook type (usually "command")
 - `command` (required) - shell command to execute
 - `blocking` (optional) - whether to wait for completion
 - `successMessage` (optional) - custom message on success
@@ -49,15 +51,10 @@ Example of a valid hook:
   "hooks": {
     "SessionStart": [
       {
-        "matcher": {},
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo \\"✓ Session started\\"",
-            "blocking": false,
-            "successMessage": "Ready to code!"
-          }
-        ]
+        "type": "command",
+        "command": "echo \\"✓ Session started\\"",
+        "blocking": false,
+        "successMessage": "Ready to code!"
       }
     ]
   }
@@ -95,19 +92,25 @@ Remove the invalid keys to fix the validation error."""
                 # Check hooks configuration
                 if "hooks" in settings and isinstance(settings["hooks"], dict):
                     for hook_name, hook_config in settings["hooks"].items():
-                        if not isinstance(hook_config, dict):
+                        # Hook config should be a list of hook objects
+                        if not isinstance(hook_config, list):
                             continue
 
-                        # Find invalid keys
-                        hook_keys = set(hook_config.keys())
-                        invalid_keys = hook_keys - self.VALID_HOOK_KEYS
+                        # Check each hook object in the array
+                        for idx, hook_obj in enumerate(hook_config):
+                            if not isinstance(hook_obj, dict):
+                                continue
 
-                        if invalid_keys:
-                            invalid_hooks.append({
-                                "hook": hook_name,
-                                "file": settings_path.name,
-                                "invalid_keys": sorted(invalid_keys)
-                            })
+                            # Find invalid keys
+                            hook_keys = set(hook_obj.keys())
+                            invalid_keys = hook_keys - self.VALID_HOOK_KEYS
+
+                            if invalid_keys:
+                                invalid_hooks.append({
+                                    "hook": f"{hook_name}[{idx}]",
+                                    "file": settings_path.name,
+                                    "invalid_keys": sorted(invalid_keys)
+                                })
 
             except Exception:
                 continue

@@ -7,7 +7,6 @@
       "Edit",
       "Glob",
       "Grep",
-      "TodoRead",
       "TodoWrite",
       "Task",
       "Skill"
@@ -28,14 +27,9 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": {},
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo \"✓ C3 session started - Run tests with: python3 -m pytest tests/\"",
-            "blocking": false
-          }
-        ]
+        "type": "command",
+        "command": "echo \"✓ C3 session started - Run tests with: python3 -m pytest tests/\"",
+        "blocking": false
       }
     ]
   }

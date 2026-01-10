@@ -290,7 +290,6 @@ Describe your folder organization here
                     "Edit",
                     "Glob",
                     "Grep",
-                    "TodoRead",
                     "TodoWrite",
                     "Task",
                     "Skill"
@@ -303,14 +302,9 @@ Describe your folder organization here
             "hooks": {
                 "SessionStart": [
                     {
-                        "matcher": {},
-                        "hooks": [
-                            {
-                                "type": "command",
-                                "command": "echo \"✓ Session started - Ready to code!\"",
-                                "blocking": False
-                            }
-                        ]
+                        "type": "command",
+                        "command": "echo \"✓ Session started - Ready to code!\"",
+                        "blocking": False
                     }
                 ]
             }
