@@ -29,7 +29,7 @@ Please set up useful hooks in .claude/settings.json:
    {
      "hooks": {
        "SessionStart:startup": {
-         "command": "echo '✓ Session started'",
+         "command": "echo \"✓ Session started\"",
          "blocking": false
        }
      }

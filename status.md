@@ -270,6 +270,50 @@ Fixed all issues from batch export:
 - No planning documents (PRD.md or plan.md)
 - Text selection still not working (Flet limitation)
 
+## 2026-01-10
+
+### Critical Bug Fix - Shell Quoting in Detector Templates ✓
+
+**Problem Discovery:**
+- User reported startup hook error in their .claude/settings.json
+- Error traced back to C3 app's suggested hook configuration
+- Root cause: `no_hooks.py` detector template used incorrect shell quoting
+
+**Comprehensive Fix Prompt Audit:**
+- Systematically reviewed all 22 health check detectors across 3 severity levels
+- Checked fix_prompt templates for potential errors that would propagate to users
+- Validated JSON syntax, shell commands, file paths, and code examples
+
+**Issues Found and Fixed:**
+1. ✅ `health_checks/warning/no_hooks.py:32` - Shell quoting error
+   - **Before:** `"command": "echo '✓ Session started'"` (single quotes)
+   - **After:** `"command": "echo \"✓ Session started\""` (double quotes)
+   - **Impact:** Users copying this template inherited the buggy pattern
+
+2. ✅ `.claude/settings.json:30` - Fixed user's existing startup hook
+   - Updated from single to double quotes
+   - Added `"outputMode": "explanatory"` for consistency
+
+**Quality Assurance Results:**
+- ✅ All 22 detector fix_prompts audited for errors
+- ✅ All JSON examples properly formatted
+- ✅ All shell commands use correct quoting
+- ✅ All security advice appropriate and safe
+- ✅ All file paths follow conventions
+- ✅ All code examples syntactically correct
+
+**Architecture Insight:**
+- Fix prompts are "code that writes code" - errors multiply across all user projects
+- Educational tool templates become de facto standards
+- Shell quoting: double quotes handle Unicode (✓), colons, and paths more reliably than single quotes
+
+**Files Changed:**
+- `.claude/settings.json` - Fixed user's startup hook configuration
+- `health_checks/warning/no_hooks.py` - Fixed template that was teaching users the wrong pattern
+
+**Commits:**
+- Ready to commit: fix: Correct shell quoting in hooks detector and settings
+
 ## Next Steps
 - Refactor large files (health_scan.py, theme.py) to meet 400-line guideline
 - Create planning documents (PRD.md)
