@@ -20,7 +20,15 @@ A Flet-based Mac app that scans Claude Code project configurations for health is
 - Services: module with get_service() singleton pattern
 - Health checks: class with check(config) → Optional[Issue]
 
+## Testing Requirements
+**CRITICAL**: Before ANY commit that modifies pages or services:
+1. Test app launches without errors (`python3 main.py`)
+2. Navigate to each tab to verify no startup errors
+3. Test the feature end-to-end
+4. See `.claude/skills/testing.md` for complete checklist
+
 ## Git Workflow
+- **TEST FIRST** - Always test app launch before committing
 - Commit after each working feature
 - Update status.md with dated entries
 - Keep commits atomic and descriptive
