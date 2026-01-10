@@ -417,7 +417,13 @@ Built complete Claude Code setup wizard that converts code folders into CC proje
 **Lines of Code:** ~1500+ lines total
 
 **Commits:**
-- Ready to commit: feat: Add CC Setup Wizard - complete onboarding system
+- `fc1abc1` - feat: Add CC Setup Wizard - complete onboarding system
+- `bd33f26` - fix: Correct Typography.BODY to Typography.BODY_MD in setup wizard
+
+**Bug Fix:**
+- Fixed AttributeError on app startup
+- Typography class has BODY_MD/BODY_SM/BODY_LG, not BODY
+- Tested all page imports successfully
 
 ## Next Steps
 - Refactor large files (health_scan.py, theme.py) to meet 400-line guideline

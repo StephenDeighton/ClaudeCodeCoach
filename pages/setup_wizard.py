@@ -36,7 +36,7 @@ class SetupWizardPage:
         self.status_updater = get_status_updater()
 
         # UI Components
-        self.path_display = ft.Text("No directory selected", size=Typography.BODY)
+        self.path_display = ft.Text("No directory selected", size=Typography.BODY_MD)
         self.content_container = ft.Container()
 
         # Check if path was passed from health scan
@@ -103,7 +103,7 @@ class SetupWizardPage:
             ),
             ft.Text(
                 "This wizard will analyze your project and create an optimized Claude Code configuration.",
-                size=Typography.BODY,
+                size=Typography.BODY_MD,
             ),
 
             ft.Container(height=Spacing.LG),
@@ -168,7 +168,7 @@ class SetupWizardPage:
             lang_str = ", ".join(self.tech_info.languages)
             results.append(ft.Row([
                 ft.Icon(ft.Icons.CODE_ROUNDED, color=Colors.ACCENT_500),
-                ft.Text(f"Languages: {lang_str}", size=Typography.BODY),
+                ft.Text(f"Languages: {lang_str}", size=Typography.BODY_MD),
             ], spacing=Spacing.SM))
 
         # Package managers
@@ -176,7 +176,7 @@ class SetupWizardPage:
             pm_str = ", ".join(self.tech_info.package_managers)
             results.append(ft.Row([
                 ft.Icon(ft.Icons.PACKAGE_ROUNDED, color=Colors.ACCENT_500),
-                ft.Text(f"Package Managers: {pm_str}", size=Typography.BODY),
+                ft.Text(f"Package Managers: {pm_str}", size=Typography.BODY_MD),
             ], spacing=Spacing.SM))
 
         # Git
@@ -184,20 +184,20 @@ class SetupWizardPage:
         git_icon = ft.Icons.CHECK_ROUNDED if self.tech_info.has_git else ft.Icons.CLOSE_ROUNDED
         results.append(ft.Row([
             ft.Icon(git_icon, color=Colors.ACCENT_500),
-            ft.Text(f"Git Repository: {git_status}", size=Typography.BODY),
+            ft.Text(f"Git Repository: {git_status}", size=Typography.BODY_MD),
         ], spacing=Spacing.SM))
 
         # File count
         results.append(ft.Row([
             ft.Icon(ft.Icons.INSERT_DRIVE_FILE_ROUNDED, color=Colors.ACCENT_500),
-            ft.Text(f"Code Files: {self.tech_info.file_count}", size=Typography.BODY),
+            ft.Text(f"Code Files: {self.tech_info.file_count}", size=Typography.BODY_MD),
         ], spacing=Spacing.SM))
 
         # Primary language
         if self.tech_info.primary_language:
             results.append(ft.Row([
                 ft.Icon(ft.Icons.STAR_ROUNDED, color=Colors.ACCENT_500),
-                ft.Text(f"Primary Language: {self.tech_info.primary_language}", size=Typography.BODY),
+                ft.Text(f"Primary Language: {self.tech_info.primary_language}", size=Typography.BODY_MD),
             ], spacing=Spacing.SM))
 
         results.append(ft.Container(height=Spacing.LG))
@@ -231,13 +231,13 @@ class SetupWizardPage:
             ft.Container(height=Spacing.MD),
             ft.Text(
                 reason,
-                size=Typography.BODY,
+                size=Typography.BODY_MD,
                 text_align=ft.TextAlign.CENTER,
             ),
             ft.Container(height=Spacing.MD),
             ft.Text(
                 "This doesn't appear to be a code project. Please select a folder containing source code.",
-                size=Typography.BODY,
+                size=Typography.BODY_MD,
                 text_align=ft.TextAlign.CENTER,
             ),
             ft.Container(height=Spacing.LG),
@@ -276,20 +276,20 @@ class SetupWizardPage:
             ft.Container(height=Spacing.MD),
             ft.Text(
                 "This project already has some Claude Code configuration.",
-                size=Typography.BODY,
+                size=Typography.BODY_MD,
             ),
             ft.Container(height=Spacing.SM),
             ft.Text(
                 "Found:",
-                size=Typography.BODY,
+                size=Typography.BODY_MD,
                 weight=ft.FontWeight.BOLD,
             ),
-            *[ft.Text(f"• {f}", size=Typography.BODY) for f in file_list],
+            *[ft.Text(f"• {f}", size=Typography.BODY_MD) for f in file_list],
             ft.Container(height=Spacing.MD),
             ft.Container(
                 content=ft.Text(
                     "⚠ Continuing will overwrite existing configuration files with best practice defaults.",
-                    size=Typography.BODY,
+                    size=Typography.BODY_MD,
                 ),
                 padding=Spacing.MD,
                 bgcolor=Colors.ORANGE_500 + "20",
@@ -325,7 +325,7 @@ class SetupWizardPage:
             rel_path = file_path.relative_to(self.selected_path) if self.selected_path else file_path
             files_list.append(ft.Row([
                 ft.Icon(ft.Icons.CHECK_CIRCLE_ROUNDED, size=20, color=Colors.GREEN_500),
-                ft.Text(str(rel_path), size=Typography.BODY),
+                ft.Text(str(rel_path), size=Typography.BODY_MD),
             ], spacing=Spacing.SM))
 
         return ft.Column([
@@ -354,7 +354,7 @@ class SetupWizardPage:
             ft.Container(height=Spacing.MD),
             ft.Text(
                 f"Created {len(self.setup_result.files_created)} files",
-                size=Typography.BODY,
+                size=Typography.BODY_MD,
             ),
             ft.Text(
                 f"Expected health score: {self.setup_result.expected_score}/100",
